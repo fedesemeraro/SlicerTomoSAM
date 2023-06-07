@@ -1,0 +1,13 @@
+name: tomosam
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python >=3.7
+  - pip
+  - pytorch
+  - torchvision
+  - opencv
+  - jupyter
+  - pip:
+    - git+https://github.com/facebookresearch/segment-anything.git
