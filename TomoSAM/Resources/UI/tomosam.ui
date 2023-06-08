@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>407</width>
-    <height>985</height>
+    <width>369</width>
+    <height>1019</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,34 +127,62 @@
              <widget class="QGroupBox" name="verticalGroupBox_7">
               <layout class="QVBoxLayout" name="verticalLayout_16">
                <item>
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Layout</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_9">
-                   <item>
-                    <widget class="QPushButton" name="push3dCenter">
-                     <property name="text">
-                      <string>Reset View</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="push3dSlices">
-                     <property name="text">
-                      <string>Hide/Show</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QWidget" name="" native="true">
+                   <layout class="QVBoxLayout" name="verticalLayout_9">
+                    <item>
+                     <widget class="QLabel" name="label_5">
+                      <property name="text">
+                       <string>Layout</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QGroupBox" name="verticalGroupBox">
+                      <layout class="QVBoxLayout" name="verticalLayout_20">
+                       <item>
+                        <widget class="QPushButton" name="pushButton_3d">
+                         <property name="text">
+                          <string>Update 3D</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="push3dCenter">
+                         <property name="text">
+                          <string>Reset View</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="push3dSlices">
+                         <property name="text">
+                          <string>Hide/Show</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_4">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QGroupBox" name="verticalGroupBox_5">
+                  <widget class="QWidget" name="verticalWidget_5" native="true">
                    <layout class="QVBoxLayout" name="verticalLayout_14">
                     <item>
                      <widget class="QLabel" name="label_6">
@@ -164,31 +192,46 @@
                      </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_5">
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_hor">
-                        <property name="text">
-                         <string>Hor</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_vert">
-                        <property name="text">
-                         <string>Vert</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                     <widget class="QGroupBox" name="">
+                      <layout class="QVBoxLayout" name="verticalLayout_12">
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_hor">
+                         <property name="text">
+                          <string>Hor</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_vert">
+                         <property name="text">
+                          <string>Vert</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_2">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QGroupBox" name="verticalGroupBox_3">
+                  <widget class="QWidget" name="verticalWidget_3" native="true">
                    <layout class="QVBoxLayout" name="verticalLayout_8">
                     <item>
                      <widget class="QLabel" name="label_7">
@@ -198,224 +241,239 @@
                      </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_7">
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_red">
-                        <property name="palette">
-                         <palette>
-                          <active>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>255</red>
-                              <green>24</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>24</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </active>
-                          <inactive>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>255</red>
-                              <green>24</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>24</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </inactive>
-                          <disabled>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="63">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </disabled>
-                         </palette>
-                        </property>
-                        <property name="text">
-                         <string>R</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_green">
-                        <property name="palette">
-                         <palette>
-                          <active>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>27</red>
-                              <green>255</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>27</red>
-                              <green>255</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </active>
-                          <inactive>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>27</red>
-                              <green>255</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>27</red>
-                              <green>255</green>
-                              <blue>0</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </inactive>
-                          <disabled>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="63">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </disabled>
-                         </palette>
-                        </property>
-                        <property name="text">
-                         <string>G</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_yellow">
-                        <property name="palette">
-                         <palette>
-                          <active>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>255</red>
-                              <green>252</green>
-                              <blue>38</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>252</green>
-                              <blue>38</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </active>
-                          <inactive>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="255">
-                              <red>255</red>
-                              <green>252</green>
-                              <blue>38</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>252</green>
-                              <blue>38</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </inactive>
-                          <disabled>
-                           <colorrole role="Text">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="63">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                           <colorrole role="PlaceholderText">
-                            <brush brushstyle="SolidPattern">
-                             <color alpha="128">
-                              <red>255</red>
-                              <green>255</green>
-                              <blue>255</blue>
-                             </color>
-                            </brush>
-                           </colorrole>
-                          </disabled>
-                         </palette>
-                        </property>
-                        <property name="text">
-                         <string>Y</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                     <widget class="QGroupBox" name="">
+                      <layout class="QVBoxLayout" name="verticalLayout_19">
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_red">
+                         <property name="palette">
+                          <palette>
+                           <active>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>255</red>
+                               <green>24</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>24</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </active>
+                           <inactive>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>255</red>
+                               <green>24</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>24</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </inactive>
+                           <disabled>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="63">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </disabled>
+                          </palette>
+                         </property>
+                         <property name="text">
+                          <string>R</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_green">
+                         <property name="palette">
+                          <palette>
+                           <active>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>27</red>
+                               <green>255</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>27</red>
+                               <green>255</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </active>
+                           <inactive>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>27</red>
+                               <green>255</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>27</red>
+                               <green>255</green>
+                               <blue>0</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </inactive>
+                           <disabled>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="63">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </disabled>
+                          </palette>
+                         </property>
+                         <property name="text">
+                          <string>G</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_yellow">
+                         <property name="palette">
+                          <palette>
+                           <active>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>255</red>
+                               <green>252</green>
+                               <blue>38</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>252</green>
+                               <blue>38</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </active>
+                           <inactive>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="255">
+                               <red>255</red>
+                               <green>252</green>
+                               <blue>38</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>252</green>
+                               <blue>38</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </inactive>
+                           <disabled>
+                            <colorrole role="Text">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="63">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                            <colorrole role="PlaceholderText">
+                             <brush brushstyle="SolidPattern">
+                              <color alpha="128">
+                               <red>255</red>
+                               <green>255</green>
+                               <blue>255</blue>
+                              </color>
+                             </brush>
+                            </colorrole>
+                           </disabled>
+                          </palette>
+                         </property>
+                         <property name="text">
+                          <string>Y</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_3">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                    </layout>
                   </widget>

@@ -99,7 +99,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         • 'e': switch to exclude-points
         • 'a': accept mask
         • 'r': reset view
-        • 'h': hide/show slice""")
+        • 'h': hide/show slice
+        • '3':update 3D view""")
         self.ui.pushEmbeddings.connect("clicked(bool)", self.onPushEmbeddings)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_vert.connect("toggled(bool)", self.onRadioOrient)
@@ -107,6 +108,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.radioButton_green.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_yellow.connect("toggled(bool)", self.onRadioView)
         self.createLayout()
+        self.ui.pushButton_3d.connect("clicked(bool)", self.onPushUpdate3d)
 
         shortcuts = [
             ("i", lambda: self.activateIncludePoints()),
@@ -114,6 +116,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             ("a", lambda: self.onPushMaskAccept()),
             ("r", lambda: self.onPush3dCenter()),
             ("h", lambda: self.onPush3dSlices()),
+            ("3", lambda: self.onPushUpdate3d()),
         ]
         for (shortcutKey, callback) in shortcuts:
             shortcut = qt.QShortcut(qt.QKeySequence(shortcutKey), slicer.util.mainWindow())
@@ -334,7 +337,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         stored_coords[caller.GetNthControlPointLabel(point_index)] = coords
         self.logic.get_mask(self.first_freeze)
-        self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
 
     def removePoint(self, caller, stored_coords, operation):
 
@@ -353,7 +355,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         else:
             self.logic.exclude_coords = new_coords
         self.logic.get_mask(self.first_freeze)
-        self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
 
     def freezeSlice(self):
         slice_widget = self.lm.sliceWidget(self.logic.slice_direction)
@@ -396,7 +397,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         if self.slice_frozen:
             self.logic.fill_mask(0)
             self.logic.pass_mask_to_slicer()
-            self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
             self.onPushMaskAccept()
 
     def onPushSegmentAdd(self):
@@ -406,7 +406,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         segmentID = self._parameterNode.GetNodeReference("tomosamSegmentation").GetSegmentation().AddEmptySegment()
         self._parameterNode.SetParameter("tomosamCurrentSegment", segmentID)
         self.ui.segmentSelector.setCurrentSegmentID(segmentID)
-        self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
         self.logic.mask.fill(0)
 
     def onPushSegmentRemove(self):
@@ -483,6 +482,9 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         controller = self.lm.sliceWidget(self.logic.slice_direction).sliceController()
         controller.setSliceVisible(self.slice_visible)
 
+    def onPushUpdate3d(self):
+        self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
+
     def onPushInitializeInterp(self):
 
         if len(self.logic.interp_slice_direction) > 1:
@@ -508,7 +510,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def onPushUndoInterp(self):
         self.logic.undo_interpolate()
-        self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
 
     def onPushEmbeddings(self):
         qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/"))
