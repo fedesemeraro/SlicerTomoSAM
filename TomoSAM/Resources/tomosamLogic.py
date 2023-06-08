@@ -1,10 +1,25 @@
 from slicer.ScriptedLoadableModule import *
 import slicer
-from segment_anything import sam_model_registry, SamPredictor
-import torch
 import numpy as np
 import pickle
-import cv2
+
+try:
+    import torch
+except ImportError:
+    slicer.util.pip_install("torch torchvision")
+    import torch
+
+try:
+    import cv2
+except ImportError:
+    slicer.util.pip_install("opencv-python")
+    import cv2
+
+try:
+    from segment_anything import sam_model_registry, SamPredictor
+except ImportError:
+    slicer.util.pip_install("git+https://github.com/facebookresearch/segment-anything.git")
+    from segment_anything import sam_model_registry, SamPredictor
 
 
 class tomosamLogic(ScriptedLoadableModuleLogic):
