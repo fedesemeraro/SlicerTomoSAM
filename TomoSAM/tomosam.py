@@ -98,11 +98,15 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         • Add Segment button adds a new label to segmentation
         • Create Interpolation button creates masks in between created ones
         • Undo button reverts interpolation
+        
+        Note: SAM was trained with up to 9 points, so it is recommended to 
+        add up to 9 include+exclude points for optimal predictions
 
         Keyboard Shortcuts:
         • 'i': switch to include-points
         • 'e': switch to exclude-points
         • 'a': accept mask
+        • 'n': new segment 
         • 'c': center view
         • 'h': hide/show slice
         • 'r': render 3D view""")
@@ -118,6 +122,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             ("i", lambda: self.activateIncludePoints()),
             ("e", lambda: self.activateExcludePoints()),
             ("a", lambda: self.onPushMaskAccept()),
+            ("n", lambda: self.onPushSegmentAdd()),
             ("c", lambda: self.onPushCenter3d()),
             ("h", lambda: self.onPushVisualizeSlice3d()),
             ("r", lambda: self.onPushRender3d()),
@@ -317,9 +322,9 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             self.actual_remove_click = False
             caller.RemoveNthControlPoint(point_index)
             return
-        coords = caller.GetNthControlPointPosition(point_index)
+        coords = caller.GetNthControlPointPosition(point_index) * self.logic.voxel_sizes
         caller.SetNthControlPointLocked(point_index, True)
-        coords = (int(round(coords[2])), -int(round(coords[1])), -int(round(coords[0])))
+        coords = (int(round(coords[2])), int(round(coords[1])), int(round(coords[0])))
 
         inside_slice_check = True
         for coord in coords:

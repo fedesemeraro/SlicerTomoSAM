@@ -2,6 +2,7 @@ from slicer.ScriptedLoadableModule import *
 import slicer
 import numpy as np
 import pickle
+import vtk
 
 try:
     import torch
@@ -31,7 +32,7 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         self._parameterNode = self.getParameterNode()
 
         self.sam, self.predictor, self.device = None, None, None
-        self.img, self.mask, self.embeddings = np.zeros((1,1,1)), np.zeros((1,1,1)), []
+        self.img, self.voxel_sizes, self.mask, self.embeddings = np.zeros((1,1,1)), np.zeros(3), np.zeros((1,1,1)), []
         self.min_mask_region_area = 500
         self.ind = 0
 
@@ -59,11 +60,14 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
 
     def read_img_embeddings(self, embeddings_filepath):
         self.img = slicer.util.arrayFromVolume(self._parameterNode.GetNodeReference("tomosamInputVolume"))
+        ras2ijk = vtk.vtkMatrix4x4()
+        self._parameterNode.GetNodeReference("tomosamInputVolume").GetRASToIJKMatrix(ras2ijk)
+        self.voxel_sizes[:] = slicer.util.arrayFromVTKMatrix(ras2ijk).diagonal()[:3]
 
         with open(embeddings_filepath, 'rb') as f:
             self.embeddings = pickle.load(f)
 
-        # checking image vs Embeddings dimensions
+        # checking image vs embeddings dimensions
         if (np.any(np.array(self.img.shape)[[1, 2]] != np.array(self.embeddings[0][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 2]] != np.array(self.embeddings[1][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 1]] != np.array(self.embeddings[2][0]['original_size']))):
