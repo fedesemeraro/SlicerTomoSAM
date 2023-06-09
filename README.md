@@ -3,36 +3,30 @@
 An extension of [3D Slicer](https://www.slicer.org/) using the [Segment Anything Model (SAM)](https://github.com/facebookresearch/segment-anything) 
 to aid the segmentation of 3D data from tomography or other imaging technique.
 
+<p align="center">
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Screenshots/tomosam_screenshot_1.png" width="100%"></img>
+</p>
+
 ## How to Get Started
 
 ### Installation:
 
 Follow these steps to install Slicer and the TomoSAM extension:
 
-- Open a terminal and run:
-
-        git clone https://github.com/fsemerar/TomoSAM.git
-
-- Download the trained weights for SAM from [this link](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
-and **save the file inside the root folder** of TomoSAM
 - Download Slicer from [this link](https://download.slicer.org/) and install it
-- In Slicer, open the python console and run this command:
-
-      slicer.util.pip_install("torch torchvision git+https://github.com/facebookresearch/segment-anything.git opencv-python")
-
-- In Slicer, navigate under `Developer Tools`&rarr;`Extension Wizard` (NOT `Extension Manager`)
-- Click on `Select Extension` and find the TomoSAM folder. The extension will appear under `Segmentations`&rarr;`TomoSAM`
+- In Slicer, open `Extension Manager` and search for TomoSAM: the extension will appear under `Segmentations`&rarr;`TomoSAM`
 
 ### Prepare the embeddings
 
 This preprocessing step creates the embeddings for all the slices of your tiff stack along the three Cartesian directions.
-You can create the embeddings by running [this notebook](./create_embeddings.ipynb) either locally or [on Colab]().
+You can create the embeddings by running [this notebook](Embeddings/create_embeddings.ipynb) either locally or 
+[on Colab](https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb).
 A GPU is recommended for this step to speed up the process; in Colab, make sure to select 
 `Runtime`&rarr;`Change runtime type` and set the `Hardware accelerator` to GPU. Locally, you will first need to create 
 the environment by running: 
 
-    conda env create --file env/environment_cpu.yml  # for a CPU machine
-    conda env create --file env/environment_gpu.yml  # for a GPU machine
+    conda env create --file env/environment_cpu.yml  # for CPU
+    conda env create --file env/environment_gpu.yml  # for GPU
     conda activate tomosam
     jupyter notebook create_embeddings.ipynb
 
@@ -45,10 +39,9 @@ These are the usual steps to produce a segmentation using TomoSAM:
 - Drag and drop the image into Slicer, which will automatically import the embeddings as well
 - Add include-points in one of the three slice viewers (Red/Green/Yellow) to create a mask and exclude-points to refine it
 - Once one point is added, the selected slice is frozen until no points exist or the `Accept Mask` button is pressed
-- Add as many segments as you have objects by clicking on `New Segment`
+- Add as many segments as you have objects by clicking on `Add Segment`
 
-Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. fill 
-between slices. 
+Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. Paint or Erase
 
 ## Citation
 
@@ -59,6 +52,10 @@ If you find this work useful for your research or applications, please cite usin
 ```
 
 ## License
+
+This work has been implemented as an integral part of the [Porous Microstructure Analysis (PuMA)](https://github.com/nasa/puma) 
+software to assist it in the necessary preprocessing tomography segmentation. 
+It is therefore released under the same open-source license:
 
 Copyright @ 2017, 2020, 2021 United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All Rights Reserved.
 This software may be used, reproduced, and provided to others only as permitted under the terms of the agreement under which it was acquired from the U.S. Government. Neither title to, nor ownership of, the software is hereby transferred. This notice shall remain on all copies of the software.

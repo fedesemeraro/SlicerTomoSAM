@@ -18,7 +18,7 @@ except ImportError:
 try:
     from segment_anything import sam_model_registry, SamPredictor
 except ImportError:
-    slicer.util.pip_install("git+https://github.com/facebookresearch/segment-anything.git")
+    slicer.util.pip_install("segment-anything")
     from segment_anything import sam_model_registry, SamPredictor
 
 
@@ -63,7 +63,7 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         with open(embeddings_filepath, 'rb') as f:
             self.embeddings = pickle.load(f)
 
-        # checking image vs embeddings dimensions
+        # checking image vs Embeddings dimensions
         if (np.any(np.array(self.img.shape)[[1, 2]] != np.array(self.embeddings[0][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 2]] != np.array(self.embeddings[1][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 1]] != np.array(self.embeddings[2][0]['original_size']))):

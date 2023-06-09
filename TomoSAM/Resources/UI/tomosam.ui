@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>369</width>
-    <height>1019</height>
+    <height>1035</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -129,7 +129,7 @@
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
-                  <widget class="QWidget" name="" native="true">
+                  <widget class="QWidget" name="widget" native="true">
                    <layout class="QVBoxLayout" name="verticalLayout_9">
                     <item>
                      <widget class="QLabel" name="label_5">
@@ -142,23 +142,23 @@
                      <widget class="QGroupBox" name="verticalGroupBox">
                       <layout class="QVBoxLayout" name="verticalLayout_20">
                        <item>
-                        <widget class="QPushButton" name="pushButton_3d">
+                        <widget class="QPushButton" name="pushRender3d">
                          <property name="text">
-                          <string>Update 3D</string>
+                          <string>Render 3D</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="push3dCenter">
+                        <widget class="QPushButton" name="pushCenter3d">
                          <property name="text">
-                          <string>Reset View</string>
+                          <string>Center View</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="push3dSlices">
+                        <widget class="QPushButton" name="pushVisualizeSlice3d">
                          <property name="text">
-                          <string>Hide/Show</string>
+                          <string>Hide/Show Slice</string>
                          </property>
                         </widget>
                        </item>
@@ -192,7 +192,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="">
+                     <widget class="QGroupBox" name="groupBox">
                       <layout class="QVBoxLayout" name="verticalLayout_12">
                        <item>
                         <widget class="QRadioButton" name="radioButton_hor">
@@ -241,7 +241,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="">
+                     <widget class="QGroupBox" name="groupBox">
                       <layout class="QVBoxLayout" name="verticalLayout_19">
                        <item>
                         <widget class="QRadioButton" name="radioButton_red">
@@ -2338,7 +2338,7 @@
               <item>
                <widget class="QLabel" name="label_4">
                 <property name="text">
-                 <string>Interpolate</string>
+                 <string>Interpolation</string>
                 </property>
                </widget>
               </item>

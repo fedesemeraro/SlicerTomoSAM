@@ -14,8 +14,9 @@ class tomosam(ScriptedLoadableModule):
         self.parent.categories = ["Segmentation"]
         self.parent.dependencies = []
         self.parent.contributors = ["Federico Semeraro (NASA); Alexandre Quintart (NASA); "
-                                    "Sergio Fraile Izquierdo (NASA); Joseph Ferguson (Stanford)"]
-        self.parent.helpText = ""
+                                    "Sergio Fraile Izquierdo (NASA); Joseph Ferguson (Stanford University)"]
+        self.parent.helpText = "TomoSAM helps with the segmentation of 3D data from tomography or other imaging " \
+                               "technique using the Segment Anything Model (SAM)."
         self.parent.acknowledgementText = ""
 
 
@@ -78,29 +79,33 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.pushMaskClear.setToolTip("Only clears active mask and points, use Segment Editor for other modifications")
         self.ui.pushSegmentAdd.connect("clicked(bool)", self.onPushSegmentAdd)
         self.ui.pushSegmentRemove.connect("clicked(bool)", self.onPushSegmentRemove)
-        self.ui.push3dCenter.connect("clicked(bool)", self.onPush3dCenter)
-        self.ui.push3dSlices.connect("clicked(bool)", self.onPush3dSlices)
+        self.ui.pushCenter3d.connect("clicked(bool)", self.onPushCenter3d)
+        self.ui.pushCenter3d.setToolTip("Reset and center view (keyboard shortcut: 'r')")
+        self.ui.pushVisualizeSlice3d.connect("clicked(bool)", self.onPushVisualizeSlice3d)
+        self.ui.pushVisualizeSlice3d.setToolTip("Hide/Show 2D slice in 3D viewer (keyboard shortcut: 'h')")
+        self.ui.pushRender3d.connect("clicked(bool)", self.onPushRender3d)
+        self.ui.pushRender3d.setToolTip("Update 3D rendering of segments (keyboard shortcut: '3')")
         self.ui.pushInitializeInterp.connect("clicked(bool)", self.onPushInitializeInterp)
         self.ui.pushInitializeInterp.setToolTip("'Fill between slices' method from the Segment Editor")
         self.ui.pushUndoInterp.connect("clicked(bool)", self.onPushUndoInterp)
         self.ui.pushHelp.connect("clicked(bool)", self.onPushShowHelp)
         self.ui.pushHelp.setToolTip("""General Tips:
-        • Download SAM weights (see TomoSAM Github README)
         • Generate .pkl using create_embeddings.ipynb
         • Place .tif and .pkl in same folder and make their name equivalent
         • Drag and drop .tif --> imports both image and embeddings
         • Once include-point added, the slice is frozen (white background)
-        • New Segment button adds a new label to segmentation
-        • Interpolate button creates masks in between manually created ones
+        • Accept Mask button clears points and confirms slice segmentation
+        • Add Segment button adds a new label to segmentation
+        • Create Interpolation button creates masks in between created ones
         • Undo button reverts interpolation
 
         Keyboard Shortcuts:
         • 'i': switch to include-points
         • 'e': switch to exclude-points
         • 'a': accept mask
-        • 'r': reset view
+        • 'c': center view
         • 'h': hide/show slice
-        • '3':update 3D view""")
+        • 'r': render 3D view""")
         self.ui.pushEmbeddings.connect("clicked(bool)", self.onPushEmbeddings)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_vert.connect("toggled(bool)", self.onRadioOrient)
@@ -108,15 +113,14 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.radioButton_green.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_yellow.connect("toggled(bool)", self.onRadioView)
         self.createLayout()
-        self.ui.pushButton_3d.connect("clicked(bool)", self.onPushUpdate3d)
 
         shortcuts = [
             ("i", lambda: self.activateIncludePoints()),
             ("e", lambda: self.activateExcludePoints()),
             ("a", lambda: self.onPushMaskAccept()),
-            ("r", lambda: self.onPush3dCenter()),
-            ("h", lambda: self.onPush3dSlices()),
-            ("3", lambda: self.onPushUpdate3d()),
+            ("c", lambda: self.onPushCenter3d()),
+            ("h", lambda: self.onPushVisualizeSlice3d()),
+            ("r", lambda: self.onPushRender3d()),
         ]
         for (shortcutKey, callback) in shortcuts:
             shortcut = qt.QShortcut(qt.QKeySequence(shortcutKey), slicer.util.mainWindow())
@@ -266,7 +270,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         if caller.GetNumberOfControlPoints() == 1 and not self.slice_frozen:
             self.logic.slice_direction = slice_dir
-            self.onPush3dSlices(not_from_button=True)
+            self.onPushVisualizeSlice3d(not_from_button=True)
             self.freezeSlice()
             self.first_freeze = True
 
@@ -422,8 +426,9 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             sam_weights_path = initialized_path
             self.ui.PathLineEdit_sam.currentPath = sam_weights_path
         if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
-            slicer.util.errorDisplay("SAM weights file not found")
-            return
+            print("Downloading SAM weights ... ", end='')
+            os.system(f"curl https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -o {sam_weights_path}")
+            print("Done")
         elif os.path.splitext(sam_weights_path)[1] != ".pth":
             slicer.util.errorDisplay("Unrecognized extension for SAM weights")
             return
@@ -435,13 +440,13 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         if not self.checkVolume():
             return
         elif not os.path.exists(embeddings_path) or not os.path.isfile(embeddings_path):
-            slicer.util.errorDisplay("Image embeddings file not found")
+            slicer.util.errorDisplay("Image Embeddings file not found")
             return
         elif os.path.splitext(embeddings_path)[1] != ".pkl":
-            slicer.util.errorDisplay("Unrecognized extension for image embeddings")
+            slicer.util.errorDisplay("Unrecognized extension for image Embeddings")
             return
 
-        print("Reading embeddings ... ", end='')
+        print("Reading Embeddings ... ", end='')
         check = self.logic.read_img_embeddings(embeddings_path)
         print("Done")
         if not check:
@@ -459,30 +464,28 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         if self.logic.sam is None:
             slicer.util.errorDisplay("Please select SAM weights")
         elif len(self.logic.embeddings) == 0:
-            slicer.util.errorDisplay("Please select image embeddings")
+            slicer.util.errorDisplay("Please select image Embeddings")
         else:
             return True
         return False
 
-    def onPush3dCenter(self):
+    def onPushCenter3d(self):
         if not self.slice_frozen:
             threeDWidget = self.lm.threeDWidget(0)
             threeDView = threeDWidget.threeDView()
             threeDView.resetFocalPoint()
             slicer.util.resetSliceViews()
 
-    def onPush3dSlices(self, not_from_button=False):
+    def onPushVisualizeSlice3d(self, not_from_button=False):
         if not not_from_button:
             self.slice_visible = not self.slice_visible
         # first deactivate them all
         for sliceViewName in self.lm.sliceViewNames():
-            controller = self.lm.sliceWidget(sliceViewName).sliceController()
-            controller.setSliceVisible(False)
+            self.lm.sliceWidget(sliceViewName).sliceController().setSliceVisible(False)
         # then activate only the one we need
-        controller = self.lm.sliceWidget(self.logic.slice_direction).sliceController()
-        controller.setSliceVisible(self.slice_visible)
+        self.lm.sliceWidget(self.logic.slice_direction).sliceController().setSliceVisible(self.slice_visible)
 
-    def onPushUpdate3d(self):
+    def onPushRender3d(self):
         self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
 
     def onPushInitializeInterp(self):
@@ -512,7 +515,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.logic.undo_interpolate()
 
     def onPushEmbeddings(self):
-        qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/"))
+        qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb"))
 
     @vtk.calldata_type(vtk.VTK_OBJECT)
     def onNodeAdded(self, caller, event, calldata):
@@ -532,10 +535,10 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             storage_node = volumeNode.GetStorageNode()
             if storage_node is not None:
                 pkl_filepath = os.path.splitext(storage_node.GetFileName())[0] + ".pkl"
-                if os.path.exists(pkl_filepath):  # try to import embeddings too if same name and folder as image
+                if os.path.exists(pkl_filepath):  # try to import Embeddings too if same name and folder as image
                     self.ui.PathLineEdit_emb.setCurrentPath(pkl_filepath)
-                self.onPush3dCenter()  # also run these functions on import
-                self.onPush3dSlices(not_from_button=True)
+                self.onPushCenter3d()  # also run these functions on import
+                self.onPushVisualizeSlice3d(not_from_button=True)
 
     def activateIncludePoints(self):
         interactionNode = slicer.app.applicationLogic().GetInteractionNode()
@@ -585,7 +588,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.lm.layoutLogic().GetLayoutNode().AddLayoutDescription(self.layout_id, customLayout)
         self.lm.setLayout(self.layout_id)
         self.logic.slice_direction = self.view
-        self.onPush3dSlices(not_from_button=True)
+        self.onPushVisualizeSlice3d(not_from_button=True)
 
     # methods below don't need to be changed
     def cleanup(self):
