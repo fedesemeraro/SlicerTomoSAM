@@ -4,7 +4,7 @@ An extension of [3D Slicer](https://www.slicer.org/) using the [Segment Anything
 to aid the segmentation of 3D data from tomography or other imaging technique.
 
 <p align="center">
-  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Screenshots/tomosam_screenshot_1.png" width="100%"></img>
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_screenshot_1.png" width="100%"></img>
 </p>
 
 ## How to Get Started
