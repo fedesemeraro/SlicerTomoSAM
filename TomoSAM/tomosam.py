@@ -16,7 +16,7 @@ class tomosam(ScriptedLoadableModule):
         self.parent.contributors = ["Federico Semeraro (NASA); Alexandre Quintart (NASA); "
                                     "Sergio Fraile Izquierdo (NASA); Joseph Ferguson (Stanford University)"]
         self.parent.helpText = "TomoSAM helps with the segmentation of 3D data from tomography or other imaging " \
-                               "technique using the Segment Anything Model (SAM)."
+                               "techniques using the Segment Anything Model (SAM)."
         self.parent.acknowledgementText = ""
 
 

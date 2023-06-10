@@ -22,7 +22,6 @@ except ImportError:
     slicer.util.pip_install("segment-anything")
     from segment_anything import sam_model_registry, SamPredictor
 
-
 class tomosamLogic(ScriptedLoadableModuleLogic):
     def __init__(self):
         """

@@ -1,7 +1,7 @@
 # TomoSAM
 
 An extension of [3D Slicer](https://www.slicer.org/) using the [Segment Anything Model (SAM)](https://github.com/facebookresearch/segment-anything) 
-to aid the segmentation of 3D data from tomography or other imaging technique.
+to aid the segmentation of 3D data from tomography or other imaging techniques.
 
 <p align="center">
   <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_screenshot_1.png" width="100%"></img>
