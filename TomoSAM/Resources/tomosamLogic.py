@@ -22,6 +22,7 @@ except ImportError:
     slicer.util.pip_install("segment-anything")
     from segment_anything import sam_model_registry, SamPredictor
 
+
 class tomosamLogic(ScriptedLoadableModuleLogic):
     def __init__(self):
         """
@@ -43,7 +44,7 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
 
         self.mask_locations = set()
         self.interp_slice_direction = set()
-        self.mask_undo = None
+        self.mask_backup = None
 
     def create_sam(self, sam_checkpoint_filepath):
         print("Creating SAM predictor ... ", end="")
@@ -75,33 +76,16 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         else:
             return True
 
-    def select_embedding(self):
-        self.predictor.original_size = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['original_size']
-        self.predictor.input_size = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['input_size']
-        self.predictor.features = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['features'].to(self.device)
-
-    def get_mask_from_slicer(self):
-        self.mask = slicer.util.arrayFromSegmentBinaryLabelmap(self._parameterNode.GetNodeReference("tomosamSegmentation"),
-                                                               self._parameterNode.GetParameter("tomosamCurrentSegment"))
-
     def pass_mask_to_slicer(self):
         slicer.util.updateSegmentBinaryLabelmapFromArray(self.mask,
                                                          self._parameterNode.GetNodeReference("tomosamSegmentation"),
                                                          self._parameterNode.GetParameter("tomosamCurrentSegment"),
                                                          self._parameterNode.GetNodeReference("tomosamInputVolume"))
 
-    def fill_mask(self, value):
-        if self.slice_direction == 'Red':
-            self.mask[self.ind] = value
-        elif self.slice_direction == 'Green':
-            self.mask[:, self.ind] = value
-        else:
-            self.mask[:, :, self.ind] = value
-
     def get_mask(self, first_freeze):
 
         if first_freeze:
-            self.get_mask_from_slicer()
+            self.backup_mask()
 
         if len(self.include_coords) != 0:
             if self.slice_direction == 'Red':
@@ -117,18 +101,39 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
                 exclude_points = [[coords[1], coords[0]] for coords in self.exclude_coords.values()]
                 self.ind = list(self.include_coords.values())[0][2]
 
-            self.select_embedding()
-            mask, _, _ = self.predictor.predict(point_coords=np.array(include_points + exclude_points),
-                                                point_labels=np.array([1] * len(include_points) + [0] * len(exclude_points)),
-                                                multimask_output=False)
+            # select embeddings
+            self.predictor.original_size = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['original_size']
+            self.predictor.input_size = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['input_size']
+            self.predictor.features = self.embeddings[self.emb_slice_d[self.slice_direction]][self.ind]['features'].to(self.device)
 
-            mask = mask[0].astype(np.uint8)
-            mask = self.remove_small_regions(mask, self.min_mask_region_area, "holes")
-            mask = self.remove_small_regions(mask, self.min_mask_region_area, "islands")
-            self.fill_mask(mask)
+            new_mask, _, _ = self.predictor.predict(point_coords=np.array(include_points + exclude_points),
+                                                    point_labels=np.array([1] * len(include_points) + [0] * len(exclude_points)),
+                                                    multimask_output=False)
+
+            new_mask = new_mask[0].astype(np.uint8)
+            new_mask = self.remove_small_regions(new_mask, self.min_mask_region_area, "holes")
+            new_mask = self.remove_small_regions(new_mask, self.min_mask_region_area, "islands")
+
+            if self.slice_direction == 'Red':
+                self.mask[self.ind] = np.logical_or(self.mask_backup[self.ind], new_mask)
+            elif self.slice_direction == 'Green':
+                self.mask[:, self.ind] = np.logical_or(self.mask_backup[:, self.ind], new_mask)
+            else:
+                self.mask[:, :, self.ind] = np.logical_or(self.mask_backup[:, :, self.ind], new_mask)
+
+            self.pass_mask_to_slicer()
         else:
-            self.fill_mask(0)
-        self.pass_mask_to_slicer()
+            self.undo()
+
+    def backup_mask(self):
+        self.mask = slicer.util.arrayFromSegmentBinaryLabelmap(self._parameterNode.GetNodeReference("tomosamSegmentation"),
+                                                               self._parameterNode.GetParameter("tomosamCurrentSegment"))
+        self.mask_backup = self.mask.copy()
+
+    def undo(self):
+        if self.mask_backup is not None:
+            self.mask = self.mask_backup.copy()
+            self.pass_mask_to_slicer()
 
     @staticmethod
     def remove_small_regions(mask, area_thresh, mode):
@@ -149,13 +154,3 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
                 fill_labels = [int(np.argmax(sizes)) + 1]
         mask = np.isin(regions, fill_labels)
         return mask
-
-    def backup_mask(self):
-        self.get_mask_from_slicer()
-        self.mask_undo = self.mask.copy()
-
-    def undo_interpolate(self):
-        if self.mask_undo is not None:
-            self.mask = self.mask_undo.copy()
-            self.pass_mask_to_slicer()
-            self.mask_undo = None

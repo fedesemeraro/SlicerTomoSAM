@@ -2792,7 +2792,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushUndoInterp">
+               <widget class="QPushButton" name="pushUndo">
                 <property name="palette">
                  <palette>
                   <active>

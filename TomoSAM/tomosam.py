@@ -78,16 +78,18 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.pushMaskClear.connect("clicked(bool)", self.onPushMaskClear)
         self.ui.pushMaskClear.setToolTip("Only clears active mask and points, use Segment Editor for other modifications")
         self.ui.pushSegmentAdd.connect("clicked(bool)", self.onPushSegmentAdd)
+        self.ui.pushSegmentAdd.setToolTip("Add new segment (keyboard shortcut: 'n')")
         self.ui.pushSegmentRemove.connect("clicked(bool)", self.onPushSegmentRemove)
         self.ui.pushCenter3d.connect("clicked(bool)", self.onPushCenter3d)
-        self.ui.pushCenter3d.setToolTip("Reset and center view (keyboard shortcut: 'r')")
+        self.ui.pushCenter3d.setToolTip("Reset and center view (keyboard shortcut: 'c')")
         self.ui.pushVisualizeSlice3d.connect("clicked(bool)", self.onPushVisualizeSlice3d)
         self.ui.pushVisualizeSlice3d.setToolTip("Hide/Show 2D slice in 3D viewer (keyboard shortcut: 'h')")
         self.ui.pushRender3d.connect("clicked(bool)", self.onPushRender3d)
-        self.ui.pushRender3d.setToolTip("Update 3D rendering of segments (keyboard shortcut: '3')")
+        self.ui.pushRender3d.setToolTip("Update 3D rendering of segments (keyboard shortcut: 'r')")
         self.ui.pushInitializeInterp.connect("clicked(bool)", self.onPushInitializeInterp)
         self.ui.pushInitializeInterp.setToolTip("'Fill between slices' method from the Segment Editor")
-        self.ui.pushUndoInterp.connect("clicked(bool)", self.onPushUndoInterp)
+        self.ui.pushUndo.connect("clicked(bool)", self.onPushUndo)
+        self.ui.pushUndo.setToolTip("Undo interpolate or last mask (keyboard shortcut: 'z')")
         self.ui.pushHelp.connect("clicked(bool)", self.onPushShowHelp)
         self.ui.pushHelp.setToolTip("""General Tips:
         • Generate .pkl using create_embeddings.ipynb
@@ -109,7 +111,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         • 'n': new segment 
         • 'c': center view
         • 'h': hide/show slice
-        • 'r': render 3D view""")
+        • 'r': render 3D view
+        • 'z': undo interpolate or last mask""")
         self.ui.pushEmbeddings.connect("clicked(bool)", self.onPushEmbeddings)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_vert.connect("toggled(bool)", self.onRadioOrient)
@@ -126,6 +129,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             ("c", lambda: self.onPushCenter3d()),
             ("h", lambda: self.onPushVisualizeSlice3d()),
             ("r", lambda: self.onPushRender3d()),
+            ("z", lambda: self.onPushUndo()),
         ]
         for (shortcutKey, callback) in shortcuts:
             shortcut = qt.QShortcut(qt.QKeySequence(shortcutKey), slicer.util.mainWindow())
@@ -404,9 +408,11 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def onPushMaskClear(self):
         if self.slice_frozen:
-            self.logic.fill_mask(0)
-            self.logic.pass_mask_to_slicer()
+            self.logic.undo()
             self.onPushMaskAccept()
+
+    def onPushUndo(self):
+        self.logic.undo()
 
     def onPushSegmentAdd(self):
         self.clearPoints()
@@ -515,9 +521,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         for segmentID in self._parameterNode.GetNodeReference("tomosamSegmentation").GetSegmentation().GetSegmentIDs():
             if segmentID != self._parameterNode.GetParameter("tomosamCurrentSegment"):
                 self._parameterNode.GetNodeReference("tomosamSegmentation").GetDisplayNode().SetSegmentVisibility(segmentID, True)
-
-    def onPushUndoInterp(self):
-        self.logic.undo_interpolate()
 
     def onPushEmbeddings(self):
         qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb"))
