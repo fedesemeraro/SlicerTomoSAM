@@ -46,6 +46,4 @@ build
 main*.py
 log*.txt
 *.o*
-!tomosam.png
-!tomosam_screenshot_1.png
-!tomosam_logo.png
+!tomosam_*.png

@@ -9,7 +9,15 @@ to aid the segmentation of 3D data from tomography or other imaging techniques.
   <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_screenshot_1.png" width="100%"></img>
 </p>
 
+<p align="center">
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_diagram.png" width="100%"></img>
+</p>
+
 ## How to Get Started
+
+You can follow [this tutorial video]() 
+for a quick guide on how to get started. The example data used in the video can be downloaded 
+[from here](https://drive.google.com/drive/folders/1YeerY3b1S-qIsVOleminwZeCM0Uw6TJr?usp=sharing).
 
 ### Installation:
 
@@ -50,7 +58,12 @@ Note that you can further modify the masks created in TomoSAM using the widgets 
 If you find this work useful for your research or applications, please cite using this BibTeX:
 
 ```BibTeX
-
+@article{semeraro2023tomosam,
+  title={TomoSAM: a 3D Slicer extension using SAM for tomography segmentation},
+  author={Semeraro, Federico and Quintart, Alexandre and Fraile Izquierdo, Sergio and Ferguson, Joseph C.},
+  journal={arXiv preprint arXiv:},
+  year={2023}
+}
 ```
 
 ## License
