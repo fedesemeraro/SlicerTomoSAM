@@ -99,7 +99,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         • Accept Mask button clears points and confirms slice segmentation
         • Add Segment button adds a new label to segmentation
         • Create Interpolation button creates masks in between created ones
-        • Undo button reverts interpolation
+        • Undo button reverts interpolation or last mask
+        • Clear button clears the points and the active mask
         
         Note: SAM was trained with up to 9 points, so it is recommended to 
         add up to 9 include+exclude points for optimal predictions
