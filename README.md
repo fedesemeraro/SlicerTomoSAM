@@ -10,21 +10,24 @@ to aid the segmentation of 3D data from tomography or other imaging techniques.
 </p>
 
 <p align="center">
-  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_diagram.png" width="100%"></img>
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_workflow.png" width="100%"></img>
 </p>
+
 
 ## How to Get Started
 
 You can follow [this tutorial video](https://youtu.be/4nXCYrvBSjk) 
-for a quick guide on how to get started. The example data used in the video can be downloaded 
+for a quick guide on how to get started. Some example 3D medical images and their embeddings can be downloaded 
 [from here](https://nasa-ext.box.com/s/gyjlrhv63pdj2k9yip6g5reb2r9jlc6l).
+
 
 ### Installation:
 
 Follow these steps to install Slicer and the TomoSAM extension:
 
 - Download Slicer from [this link](https://download.slicer.org/) and install it
-- In Slicer, open `Extension Manager` and search for TomoSAM: the extension will appear under `Segmentations`&rarr;`TomoSAM`
+- In Slicer, open `Extension Manager` and search for TomoSAM: the extension will appear under `Segmentation`&rarr;`TomoSAM`
+
 
 ### Prepare the embeddings
 
@@ -40,6 +43,7 @@ the environment by running:
     conda activate tomosam
     jupyter notebook create_embeddings.ipynb
 
+
 ### How to use the TomoSAM Slicer extension
 
 These are the usual steps to produce a segmentation using TomoSAM: 
@@ -51,14 +55,21 @@ These are the usual steps to produce a segmentation using TomoSAM:
 - Once one point is added, the selected slice is frozen until no points exist or the `Accept Mask` button is pressed
 - Add as many segments as you have objects by clicking on `Add Segment`
 - Interpolate between the created masks using the `Create Interpolation` button
-- 3D rendering doesn't update automatically to reduce latency: click on the `Render 3D` button to update view
+- Surface rendering doesn't update automatically to reduce latency: click on the `Render 3D` button to update the 3D view
 
 Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. Paint or Erase.
-In addition, notice that several keyboard shortcuts have been added to streamline the segmentation process.
+In addition, notice that several **keyboard shortcuts** have been added to streamline the segmentation process 
+(refer to the `Info help` button within TomoSAM for the list of shortcuts).
+
+<p align="center">
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_diagram.png" width="100%"></img>
+</p>
+
 
 ## Citation
 
-If you find this work useful for your research or applications, please cite using this BibTeX:
+If you find this work useful for your research or applications, please cite using the following BibTeX, related to 
+[our paper](https://arxiv.org/abs/):
 
 ```BibTeX
 @article{semeraro2023tomosam,
@@ -68,6 +79,7 @@ If you find this work useful for your research or applications, please cite usin
   year={2023}
 }
 ```
+
 
 ## License
 
