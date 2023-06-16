@@ -3,18 +3,13 @@ import slicer
 import numpy as np
 import pickle
 import vtk
+import SimpleITK as sitk
 
 try:
     import torch
 except ImportError:
     slicer.util.pip_install("torch torchvision")
     import torch
-
-try:
-    import cv2
-except ImportError:
-    slicer.util.pip_install("opencv-python")
-    import cv2
 
 try:
     from segment_anything import sam_model_registry, SamPredictor
@@ -141,9 +136,16 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         assert mode in ["holes", "islands"]
         correct_holes = mode == "holes"
         working_mask = (correct_holes ^ mask).astype(np.uint8)
-        n_labels, regions, stats, _ = cv2.connectedComponentsWithStats(working_mask, 8)
-        sizes = stats[:, -1][1:]  # Row 0 is background label
+        sitk_image = sitk.GetImageFromArray(working_mask)
+        connected_components = sitk.ConnectedComponent(sitk_image, True)
+        regions = sitk.RelabelComponent(connected_components)
+        stats = sitk.LabelShapeStatisticsImageFilter()
+        stats.Execute(regions)
+        regions = sitk.GetArrayFromImage(regions)
+        n_labels = stats.GetNumberOfLabels() + 1
+        sizes = np.array([stats.GetPhysicalSize(label) for label in stats.GetLabels()])
         small_regions = [i + 1 for i, s in enumerate(sizes) if s < area_thresh]
+
         if len(small_regions) == 0:
             return mask
         fill_labels = [0] + small_regions

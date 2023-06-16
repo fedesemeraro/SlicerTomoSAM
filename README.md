@@ -69,13 +69,13 @@ In addition, notice that several **keyboard shortcuts** have been added to strea
 ## Citation
 
 If you find this work useful for your research or applications, please cite using the following BibTeX, related to 
-[our paper](https://arxiv.org/abs/):
+[our paper](https://arxiv.org/abs/2306.08609):
 
 ```BibTeX
 @article{semeraro2023tomosam,
   title={TomoSAM: a 3D Slicer extension using SAM for tomography segmentation},
   author={Semeraro, Federico and Quintart, Alexandre and Fraile Izquierdo, Sergio and Ferguson, Joseph C.},
-  journal={arXiv preprint arXiv:},
+  journal={arXiv preprint arXiv:2306.08609},
   year={2023}
 }
 ```
