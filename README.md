@@ -23,10 +23,16 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 
 ### Installation:
 
-Follow these steps to install Slicer and the TomoSAM extension:
+Follow these steps to setup the extension:
 
-- Download Slicer from [this link](https://download.slicer.org/) and install it
-- In Slicer, open `Extension Manager` and search for TomoSAM: the extension will appear under `Segmentation`&rarr;`TomoSAM`
+- Download [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM/archive/refs/heads/main.zip) and unzip it
+- Download [Slicer](https://download.slicer.org/) and install it
+- Within Slicer, open `Applications Settings`&rarr;`Modules`
+- Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and then click ok to restart
+- The extension will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
+
+Note that the first time TomoSAM is launched, Slicer will freeze for a few minutes because it needs to download 
+[these trained weights](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth).
 
 
 ### Prepare the embeddings
