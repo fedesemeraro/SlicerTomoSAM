@@ -1,6 +1,6 @@
 from slicer.ScriptedLoadableModule import *
 from slicer.util import VTKObservationMixin
-from Resources.tomosamLogic import tomosamLogic
+from tomosamLib.tomosamLogic import tomosamLogic
 import slicer
 import os
 import vtk
@@ -13,7 +13,7 @@ class tomosam(ScriptedLoadableModule):
         self.parent.title = "TomoSAM"
         self.parent.categories = ["Segmentation"]
         self.parent.dependencies = []
-        self.parent.contributors = ["Federico Semeraro (NASA); Alexandre Quintart (NASA); "
+        self.parent.contributors = ["Federico Semeraro (NASA); Alexandre Quintart (NASA)",
                                     "Sergio Fraile Izquierdo (NASA); Joseph Ferguson (Stanford University)"]
         self.parent.helpText = "TomoSAM helps with the segmentation of 3D data from tomography or other imaging " \
                                "techniques using the Segment Anything Model (SAM)."
@@ -101,15 +101,15 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         • Create Interpolation button creates masks in between created ones
         • Undo button reverts interpolation or last mask
         • Clear button clears the points and the active mask
-        
-        Note: SAM was trained with up to 9 points, so it is recommended to 
+
+        Note: SAM was trained with up to 9 points, so it is recommended to
         add up to 9 include+exclude points for optimal predictions
 
         Keyboard Shortcuts:
         • 'i': switch to include-points
         • 'e': switch to exclude-points
         • 'a': accept mask
-        • 'n': new segment 
+        • 'n': new segment
         • 'c': center view
         • 'h': hide/show slice
         • 'r': render 3D view
@@ -438,7 +438,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             sam_weights_path = initialized_path
             self.ui.PathLineEdit_sam.currentPath = sam_weights_path
         if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
-            print("Downloading SAM weights ... ", end='')
+            slicer.util.delayDisplay("Downloading SAM weights... (it may take several minutes)", 3000)
             os.system(f"curl https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -o {sam_weights_path}")
             print("Done")
         elif os.path.splitext(sam_weights_path)[1] != ".pth":

@@ -4,6 +4,7 @@ set(MODULE_NAME tomosam)
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS
   ${MODULE_NAME}.py
+  tomosamLib/tomosamLogic.py
   )
 
 set(MODULE_PYTHON_RESOURCES
