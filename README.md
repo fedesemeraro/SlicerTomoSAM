@@ -25,11 +25,13 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 
 Follow these steps to setup the extension:
 
-- Download [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM/archive/refs/heads/main.zip) and unzip it
-- Download [Slicer](https://download.slicer.org/) and install it
-- Within Slicer, open `Applications Settings`&rarr;`Modules`
-- Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and then click ok to restart
-- The extension will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
+<ul>
+    <li>Download [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM/archive/refs/heads/main.zip) and unzip it</li>
+    <li> Download [Slicer](https://download.slicer.org/) and install it</li>
+    <li> Within Slicer, open `Applications Settings`&rarr;`Modules`</li>
+    <li> Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and then click ok to restart</li>
+    <li> The extension will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`</li>
+</ul>
 
 Note that the first time TomoSAM is launched, Slicer will freeze for a few minutes because it needs to download 
 [these trained weights](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth).
@@ -54,14 +56,16 @@ the environment by running:
 
 These are the usual steps to produce a segmentation using TomoSAM: 
 
-- Place the .tif image and .pkl embeddings in the same folder and make their name equivalent, e.g. test.tif and test.pkl
-- Open Slicer and, from the drop-down `Modules` menu, select `Segmentation`&rarr;`TomoSAM`
-- Drag and drop the image into Slicer, which will automatically import the embeddings as well
-- Add include-points in one of the three slice viewers (Red/Green/Yellow) to create a mask and exclude-points to refine it
-- Once one point is added, the selected slice is frozen until no points exist or the `Accept Mask` button is pressed
-- Add as many segments as you have objects by clicking on `Add Segment`
-- Interpolate between the created masks using the `Create Interpolation` button
-- Surface rendering doesn't update automatically to reduce latency: click on the `Render 3D` button to update the 3D view
+<ul>
+<li>Place the .tif image and .pkl embeddings in the same folder and make their name equivalent, e.g. test.tif and test.pkl</li>
+<li>Open Slicer and, from the drop-down `Modules` menu, select `Segmentation`&rarr;`TomoSAM`</li>
+<li>Drag and drop the image into Slicer, which will automatically import the embeddings as well</li>
+<li>Add include-points in one of the three slice viewers (Red/Green/Yellow) to create a mask and exclude-points to refine it</li>
+<li>Once one point is added, the selected slice is frozen until no points exist or the `Accept Mask` button is pressed</li>
+<li>Add as many segments as you have objects by clicking on `Add Segment`</li>
+<li>Interpolate between the created masks using the `Create Interpolation` button</li>
+<li>Surface rendering doesn't update automatically to reduce latency: click on the `Render 3D` button to update the 3D view</li>
+</ul>
 
 Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. Paint or Erase.
 In addition, notice that several **keyboard shortcuts** have been added to streamline the segmentation process 
