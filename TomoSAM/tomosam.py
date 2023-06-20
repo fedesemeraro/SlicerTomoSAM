@@ -5,6 +5,7 @@ import slicer
 import os
 import vtk
 import qt
+import urllib.request
 
 
 class tomosam(ScriptedLoadableModule):
@@ -439,7 +440,10 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             self.ui.PathLineEdit_sam.currentPath = sam_weights_path
         if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
             print("Downloading SAM weights ... ", end='')
-            os.system(f"curl https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -o {sam_weights_path}")
+            url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
+            sam_weights_path = "/path/to/save/sam_vit_h_4b8939.pth"
+            urllib.request.urlretrieve(url, sam_weights_path)
+
             print("Done")
         elif os.path.splitext(sam_weights_path)[1] != ".pth":
             slicer.util.errorDisplay("Unrecognized extension for SAM weights")
