@@ -441,7 +441,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
             print("Downloading SAM weights ... ", end='')
             url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
-            sam_weights_path = "/path/to/save/sam_vit_h_4b8939.pth"
+            sam_weights_path = qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation)
             urllib.request.urlretrieve(url, sam_weights_path)
 
             print("Done")
