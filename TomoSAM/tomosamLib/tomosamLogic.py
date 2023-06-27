@@ -5,18 +5,6 @@ import pickle
 import vtk
 import SimpleITK as sitk
 
-try:
-    import torch
-except ImportError:
-    slicer.util.pip_install("torch torchvision")
-    import torch
-
-try:
-    from segment_anything import sam_model_registry, SamPredictor
-except ImportError:
-    slicer.util.pip_install("segment-anything")
-    from segment_anything import sam_model_registry, SamPredictor
-
 
 class tomosamLogic(ScriptedLoadableModuleLogic):
     def __init__(self):
@@ -31,6 +19,8 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         self.min_mask_region_area = 500
         self.ind = 0
 
+        self.torch = None
+
         self.include_coords = {}
         self.exclude_coords = {}
 
@@ -41,14 +31,59 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         self.interp_slice_direction = set()
         self.mask_backup = None
 
+
+    def setupPythonRequirements(self, upgrade=False):
+
+        # Install PyTorch
+
+        try:
+          import PyTorchUtils
+        except ModuleNotFoundError as e:
+          raise RuntimeError("This module requires PyTorch extension. Install it from the Extensions Manager.")
+
+        minimumTorchVersion = "1.12"
+        torchLogic = PyTorchUtils.PyTorchUtilsLogic()
+        if not torchLogic.torchInstalled():
+            slicer.util.delayDisplay("PyTorch Python package is required. Installing... (it may take several minutes)")
+            torch = torchLogic.installTorch(askConfirmation=True, torchVersionRequirement = f">={minimumTorchVersion}")
+            if torch is None:
+                raise ValueError('PyTorch extension needs to be installed to use this module.')
+        else:
+            # torch is installed, check version
+            from packaging import version
+            if version.parse(torchLogic.torch.__version__) < version.parse(minimumTorchVersion):
+                raise ValueError(f'PyTorch version {torchLogic.torch.__version__} is not compatible with this module.'
+                                 + f' Minimum required version is {minimumTorchVersion}. You can use "PyTorch Util" module to install PyTorch'
+                                 + f' with version requirement set to: >={minimumTorchVersion}')
+
+        self.torch = torchLogic.importTorch()
+
+        # Install SAM
+
+        needToInstallSegmentAnything = False
+        try:
+            from segment_anything import sam_model_registry, SamPredictor
+        except ModuleNotFoundError as e:
+            needToInstallSegmentAnything = True
+        if needToInstallSegmentAnything:
+            slicer.util.delayDisplay("segment_anything Python package is required. Installing... (it may take several minutes)", 3000)
+            slicer.util.pip_install("segment-anything")
+            from segment_anything import sam_model_registry, SamPredictor
+
+
     def create_sam(self, sam_checkpoint_filepath):
         print("Creating SAM predictor ... ", end="")
+        self.setupPythonRequirements()
+
+        from segment_anything import sam_model_registry, SamPredictor
         self.sam = sam_model_registry["vit_h"](checkpoint=sam_checkpoint_filepath)
-        if torch.cuda.is_available():
+
+        if self.torch.cuda.is_available():
             self.device = "cuda:0"
             self.sam.to(device="cuda")
         else:
             self.device = "cpu"
+
         self.predictor = SamPredictor(self.sam)
         self.predictor.is_image_set = True
         print("Done")
