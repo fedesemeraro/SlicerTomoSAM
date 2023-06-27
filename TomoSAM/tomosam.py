@@ -5,6 +5,7 @@ import slicer
 import os
 import vtk
 import qt
+import urllib.request
 
 
 class tomosam(ScriptedLoadableModule):
@@ -36,9 +37,12 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         self.lm = slicer.app.layoutManager()
         self.segmentEditorWidget = None
-        self.layout_id = 500
+        self.layout_id = 20000
         self.orientation = 'horizontal'
         self.view = "Red"
+        self.download_location = qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation)
+        self.layouts = {}  # Initialize an empty dictionary for layouts
+        self.createLayouts() # Call the method to create layouts
 
     def setup(self):
         ScriptedLoadableModuleWidget.setup(self)
@@ -120,7 +124,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.radioButton_red.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_green.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_yellow.connect("toggled(bool)", self.onRadioView)
-        self.createLayout()
+
 
         shortcuts = [
             ("i", lambda: self.activateIncludePoints()),
@@ -151,7 +155,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.setParameterNode(self.logic.getParameterNode())
 
         self._parameterNode.root_path = os.path.dirname(os.path.dirname(os.path.dirname(self.resourcePath(''))))
-        self.pathSAMweights(os.path.join(self._parameterNode.root_path, "sam_vit_h_4b8939.pth"))
+        self.pathSAMweights(os.path.join(self.download_location, "sam_vit_h_4b8939.pth"))
 
         if self._parameterNode.GetNodeReferenceID("tomosamInputVolume") is None:
             volume_node = slicer.mrmlScene.GetFirstNodeByClass("vtkMRMLScalarVolumeNode")
@@ -433,14 +437,30 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def pathSAMweights(self, initialized_path=None):
         if initialized_path is None:
-            sam_weights_path = self.ui.PathLineEdit_sam.currentPath
+            sam_weights_path = self.download_location
         else:
             sam_weights_path = initialized_path
             self.ui.PathLineEdit_sam.currentPath = sam_weights_path
         if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
-            slicer.util.delayDisplay("Downloading SAM weights... (it may take several minutes)", 3000)
-            os.system(f"curl https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -o {sam_weights_path}")
-            print("Done")
+            if initialized_path is None:
+                # Ask the user for permission to download the SAM weights
+                reply = slicer.util.messageBox.question(self, "Download SAM Weights",
+                                             "The SAM weights file is not found. Do you want to download it?",
+                                             slicer.util.messageBox.Yes | slicer.util.messageBox.No)
+                if reply == slicer.util.messageBox.Yes:
+                    # Display a message indicating the download is starting
+                    slicer.util.messageBox.information(self, "Download Started", "Downloading SAM weights (it may take several minutes)...")
+
+                    print("Downloading SAM weights (it may take several minutes)...", end='')
+                    url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
+                    sam_weights_path = self.download_location
+                    urllib.request.urlretrieve(url, sam_weights_path)
+                    print("Done")
+                else:
+                    return
+            else:
+                slicer.util.errorDisplay("SAM weights file not found: " + sam_weights_path)
+                return
         elif os.path.splitext(sam_weights_path)[1] != ".pth":
             slicer.util.errorDisplay("Unrecognized extension for SAM weights")
             return
@@ -565,36 +585,56 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         qt.QToolTip.showText(self.ui.pushHelp.mapToGlobal(qt.QPoint()), self.ui.pushHelp.toolTip, self.ui.pushHelp)
 
     def onRadioOrient(self):
-        if self.ui.radioButton_hor.checked:
+        if self.ui.radioButton_hor.isChecked():
             self.orientation = 'horizontal'
         else:
             self.orientation = 'vertical'
-        self.createLayout()
+        self.updateLayout()
 
     def onRadioView(self):
-        if self.ui.radioButton_red.checked:
+        if self.ui.radioButton_red.isChecked():
             self.view = 'Red'
-        elif self.ui.radioButton_green.checked:
+        elif self.ui.radioButton_green.isChecked():
             self.view = 'Green'
         else:
             self.view = 'Yellow'
-        self.createLayout()
+        self.updateLayout()
 
-    def createLayout(self):
-        self.layout_id += 1
-        customLayout = f"""
-<layout type="{self.orientation}" split="true">
-  <item>
-  <view class="vtkMRMLViewNode" singletontag="1">
-    <property name="viewlabel" action="default">1</property>
-  </view>
-  </item>
-  <item>
-  <view class="vtkMRMLSliceNode" singletontag="{self.view}">
-  </view>
-  </item>
-</layout>"""
-        self.lm.layoutLogic().GetLayoutNode().AddLayoutDescription(self.layout_id, customLayout)
+    def createLayouts(self):
+        orientations = ['horizontal', 'vertical']
+        views = ['Red', 'Green', 'Yellow']
+
+        for orientation in orientations:
+            for view in views:
+                self.layout_id += 1
+                customLayout = f"""
+                    <layout type="{orientation}" split="true">
+                        <item>
+                            <view class="vtkMRMLViewNode" singletontag="1">
+                                <property name="viewlabel" action="default">1</property>
+                            </view>
+                        </item>
+                        <item>
+                            <view class="vtkMRMLSliceNode" singletontag="{view}">
+                            </view>
+                        </item>
+                    </layout>
+                """
+                self.layouts[(orientation, view)] = self.layout_id
+                self.lm.layoutLogic().GetLayoutNode().AddLayoutDescription(self.layout_id, customLayout)
+                self.layout_id += 1
+
+    def updateLayout(self):
+        self.layout_id = self.layouts.get((self.orientation, self.view))
+
+        # If the layout ID doesn't exist, use a default layout
+        if self.layout_id is None:
+            defaultLayout = self.layouts.get(('horizontal', 'Red'))
+            if defaultLayout is None:
+                return
+
+            self.layout_id = defaultLayout
+
         self.lm.setLayout(self.layout_id)
         self.logic.slice_direction = self.view
         self.onPushVisualizeSlice3d(not_from_button=True)

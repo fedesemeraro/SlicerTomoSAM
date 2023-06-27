@@ -3257,6 +3257,10 @@
             </item>
             <item>
              <widget class="qSlicerSimpleMarkupsWidget" name="markupsInclude"/>
+                <!-- <property name="toolTip">
+                    <string>Place include-point (keyboard shortcut: 'i')</string>
+                </property>
+             </widget> -->
             </item>
             <item>
              <widget class="qSlicerSimpleMarkupsWidget" name="markupsExclude"/>
