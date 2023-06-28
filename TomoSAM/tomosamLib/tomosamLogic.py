@@ -31,11 +31,9 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         self.interp_slice_direction = set()
         self.mask_backup = None
 
-
-    def setupPythonRequirements(self, upgrade=False):
+    def setupPythonRequirements(self):
 
         # Install PyTorch
-
         try:
           import PyTorchUtils
         except ModuleNotFoundError as e:
@@ -55,21 +53,15 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
                 raise ValueError(f'PyTorch version {torchLogic.torch.__version__} is not compatible with this module.'
                                  + f' Minimum required version is {minimumTorchVersion}. You can use "PyTorch Util" module to install PyTorch'
                                  + f' with version requirement set to: >={minimumTorchVersion}')
-
         self.torch = torchLogic.importTorch()
 
         # Install SAM
-
-        needToInstallSegmentAnything = False
         try:
             from segment_anything import sam_model_registry, SamPredictor
-        except ModuleNotFoundError as e:
-            needToInstallSegmentAnything = True
-        if needToInstallSegmentAnything:
+        except ModuleNotFoundError:
             slicer.util.delayDisplay("segment_anything Python package is required. Installing... (it may take several minutes)", 3000)
             slicer.util.pip_install("segment-anything")
             from segment_anything import sam_model_registry, SamPredictor
-
 
     def create_sam(self, sam_checkpoint_filepath):
         print("Creating SAM predictor ... ", end="")

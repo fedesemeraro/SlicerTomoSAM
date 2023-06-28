@@ -29,7 +29,7 @@ Follow these steps to setup the extension:
 - Download [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM/archive/refs/heads/main.zip) and unzip it
 - Download [Slicer](https://download.slicer.org/) and install it
 - Within Slicer, open `Applications Settings`&rarr;`Modules`
-- Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and then click ok to restart
+- Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and click ok to restart
 - The extension will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
 
 
@@ -52,14 +52,14 @@ the environment by running:
 
 These are the usual steps to produce a segmentation using TomoSAM: 
 
-- Place the .tif image and .pkl embeddings in the same folder and make their name equivalent, e.g. test.tif and test.pkl
+- Place the image and embeddings in the same folder and make their name equivalent, e.g. test.tif and test.pkl
 - Open Slicer and, from the drop-down `Modules` menu, select `Segmentation`&rarr;`TomoSAM`
 - Drag and drop the image into Slicer, which will automatically import the embeddings as well
-- Add include-points in one of the three slice viewers (Red/Green/Yellow) to create a mask and exclude-points to refine it
-- Once one point is added, the selected slice is frozen until no points exist or the `Accept Mask` button is pressed
+- Add include-points in the slice viewer (Red/Green/Yellow) to create a mask and exclude-points to refine it
+- When one point is added, slice scroll is frozen until no points exist or the `Accept Mask` button is pressed
 - Add as many segments as you have objects by clicking on `Add Segment`
 - Interpolate between the created masks using the `Create Interpolation` button
-- Surface rendering doesn't update automatically to reduce latency: click on the `Render 3D` button to update the 3D view
+- The 3D view does not refresh automatically to reduce latency: update it using the `Render 3D` button
 
 Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. Paint or Erase.
 In addition, notice that several **keyboard shortcuts** have been added to streamline the segmentation process 
@@ -72,8 +72,7 @@ In addition, notice that several **keyboard shortcuts** have been added to strea
 
 ## Citation
 
-If you find this work useful for your research or applications, please cite using the following BibTeX, related to 
-[our paper](https://arxiv.org/abs/2306.08609):
+If you find this work useful for your research or applications, please cite [our paper](https://arxiv.org/abs/2306.08609) using:
 
 ```BibTeX
 @article{semeraro2023tomosam,

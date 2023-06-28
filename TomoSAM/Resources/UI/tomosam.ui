@@ -49,6 +49,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="pushHelp">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; background-color:#1e1f22;&quot;&gt;&lt;span style=&quot; font-family:'Menlo'; font-size:9.8pt; color:#6a8759;&quot;&gt;General Tips:&lt;br/&gt;- Generate .pkl using the Colab notebook or the Embeddings Create button&lt;br/&gt;- Place .tif and .pkl in same folder and make their name equivalent&lt;br/&gt;- Drag and drop .tif --&amp;gt; imports both image and embeddings&lt;br/&gt;- Once include-point added, the slice is frozen (white background)&lt;br/&gt;- Accept Mask button clears points and confirms slice segmentation&lt;br/&gt;- Add Segment button adds a new label to segmentation&lt;br/&gt;- Create Interpolation button creates masks in between created ones&lt;br/&gt;- Undo button reverts interpolation or last mask&lt;br/&gt;- Clear button clears the points and the active mask&lt;br/&gt;&lt;br/&gt;Note: SAM was trained with up to 9 points, so it is recommended to&lt;br/&gt;add up to 9 include+exclude points for optimal predictions&lt;br/&gt;&lt;br/&gt;Keyboard Shortcuts:&lt;br/&gt;- 'i': switch to include-points&lt;br/&gt;- 'e': switch to exclude-points&lt;br/&gt;- 'a': accept mask&lt;br/&gt;- 'n': new segment&lt;br/&gt;- 'c': center view&lt;br/&gt;- 'h': hide/show slice&lt;br/&gt;- 'r': render 3D view&lt;br/&gt;- 'z': undo interpolate or last mask&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Help</string>
                 </property>
@@ -143,6 +146,9 @@
                       <layout class="QVBoxLayout" name="verticalLayout_20">
                        <item>
                         <widget class="QPushButton" name="pushRender3d">
+                         <property name="toolTip">
+                          <string>Update 3D rendering of segments (keyboard shortcut: 'r')</string>
+                         </property>
                          <property name="text">
                           <string>Render 3D</string>
                          </property>
@@ -150,6 +156,9 @@
                        </item>
                        <item>
                         <widget class="QPushButton" name="pushCenter3d">
+                         <property name="toolTip">
+                          <string>Reset and center view (keyboard shortcut: 'c')</string>
+                         </property>
                          <property name="text">
                           <string>Center View</string>
                          </property>
@@ -157,6 +166,9 @@
                        </item>
                        <item>
                         <widget class="QPushButton" name="pushVisualizeSlice3d">
+                         <property name="toolTip">
+                          <string>Hide/Show 2D slice in 3D viewer (keyboard shortcut: 'h')</string>
+                         </property>
                          <property name="text">
                           <string>Hide/Show Slice</string>
                          </property>
@@ -196,6 +208,9 @@
                       <layout class="QVBoxLayout" name="verticalLayout_12">
                        <item>
                         <widget class="QRadioButton" name="radioButton_hor">
+                         <property name="toolTip">
+                          <string/>
+                         </property>
                          <property name="text">
                           <string>Hor</string>
                          </property>
@@ -964,6 +979,9 @@
                    </colorrole>
                   </disabled>
                  </palette>
+                </property>
+                <property name="toolTip">
+                 <string>Add new segment (keyboard shortcut: 'n')</string>
                 </property>
                 <property name="styleSheet">
                  <string notr="true"/>
@@ -1877,6 +1895,9 @@
                   </disabled>
                  </palette>
                 </property>
+                <property name="toolTip">
+                 <string>ccept active mask (keyboard shortcut: 'a')</string>
+                </property>
                 <property name="text">
                  <string>Accept</string>
                 </property>
@@ -2325,6 +2346,9 @@
                    </colorrole>
                   </disabled>
                  </palette>
+                </property>
+                <property name="toolTip">
+                 <string>Only clears active mask and points, use Segment Editor for other modifications</string>
                 </property>
                 <property name="text">
                  <string>Clear</string>
@@ -2786,6 +2810,9 @@
                   </disabled>
                  </palette>
                 </property>
+                <property name="toolTip">
+                 <string>Fill between slices' method from the Segment Editor</string>
+                </property>
                 <property name="text">
                  <string>Create</string>
                 </property>
@@ -3235,6 +3262,9 @@
                   </disabled>
                  </palette>
                 </property>
+                <property name="toolTip">
+                 <string>Undo interpolate or last mask (keyboard shortcut: 'z')</string>
+                </property>
                 <property name="text">
                  <string>Undo</string>
                 </property>
@@ -3256,14 +3286,18 @@
              </widget>
             </item>
             <item>
-             <widget class="qSlicerSimpleMarkupsWidget" name="markupsInclude"/>
-                <!-- <property name="toolTip">
-                    <string>Place include-point (keyboard shortcut: 'i')</string>
-                </property>
-             </widget> -->
+             <widget class="qSlicerSimpleMarkupsWidget" name="markupsInclude">
+              <property name="toolTip">
+               <string>Place include-point (keyboard shortcut: 'i')</string>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="qSlicerSimpleMarkupsWidget" name="markupsExclude"/>
+             <widget class="qSlicerSimpleMarkupsWidget" name="markupsExclude">
+              <property name="toolTip">
+               <string>Place exclude-point (keyboard shortcut: 'e')</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

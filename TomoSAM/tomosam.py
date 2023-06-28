@@ -66,9 +66,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         # markups
         self.ui.markupsInclude.connect("markupsNodeChanged()", self.updateParameterNodeFromGUI)
-        self.ui.markupsInclude.setToolTip("Place include-point (keyboard shortcut: 'i')")
         self.ui.markupsExclude.connect("markupsNodeChanged()", self.updateParameterNodeFromGUI)
-        self.ui.markupsExclude.setToolTip("Place exclude-point (keyboard shortcut: 'e')")
         self.ui.markupsInclude.markupsPlaceWidget().setPlaceModePersistency(True)
         self.ui.markupsExclude.markupsPlaceWidget().setPlaceModePersistency(True)
 
@@ -78,53 +76,21 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         # push buttons
         self.ui.pushMaskAccept.connect("clicked(bool)", self.onPushMaskAccept)
-        self.ui.pushMaskAccept.setToolTip("Accept active mask (keyboard shortcut: 'a')")
         self.ui.pushMaskClear.connect("clicked(bool)", self.onPushMaskClear)
-        self.ui.pushMaskClear.setToolTip("Only clears active mask and points, use Segment Editor for other modifications")
         self.ui.pushSegmentAdd.connect("clicked(bool)", self.onPushSegmentAdd)
-        self.ui.pushSegmentAdd.setToolTip("Add new segment (keyboard shortcut: 'n')")
         self.ui.pushSegmentRemove.connect("clicked(bool)", self.onPushSegmentRemove)
         self.ui.pushCenter3d.connect("clicked(bool)", self.onPushCenter3d)
-        self.ui.pushCenter3d.setToolTip("Reset and center view (keyboard shortcut: 'c')")
         self.ui.pushVisualizeSlice3d.connect("clicked(bool)", self.onPushVisualizeSlice3d)
-        self.ui.pushVisualizeSlice3d.setToolTip("Hide/Show 2D slice in 3D viewer (keyboard shortcut: 'h')")
         self.ui.pushRender3d.connect("clicked(bool)", self.onPushRender3d)
-        self.ui.pushRender3d.setToolTip("Update 3D rendering of segments (keyboard shortcut: 'r')")
         self.ui.pushInitializeInterp.connect("clicked(bool)", self.onPushInitializeInterp)
-        self.ui.pushInitializeInterp.setToolTip("'Fill between slices' method from the Segment Editor")
         self.ui.pushUndo.connect("clicked(bool)", self.onPushUndo)
-        self.ui.pushUndo.setToolTip("Undo interpolate or last mask (keyboard shortcut: 'z')")
         self.ui.pushHelp.connect("clicked(bool)", self.onPushShowHelp)
-        self.ui.pushHelp.setToolTip("""General Tips:
-        • Generate .pkl using create_embeddings.ipynb
-        • Place .tif and .pkl in same folder and make their name equivalent
-        • Drag and drop .tif --> imports both image and embeddings
-        • Once include-point added, the slice is frozen (white background)
-        • Accept Mask button clears points and confirms slice segmentation
-        • Add Segment button adds a new label to segmentation
-        • Create Interpolation button creates masks in between created ones
-        • Undo button reverts interpolation or last mask
-        • Clear button clears the points and the active mask
-
-        Note: SAM was trained with up to 9 points, so it is recommended to
-        add up to 9 include+exclude points for optimal predictions
-
-        Keyboard Shortcuts:
-        • 'i': switch to include-points
-        • 'e': switch to exclude-points
-        • 'a': accept mask
-        • 'n': new segment
-        • 'c': center view
-        • 'h': hide/show slice
-        • 'r': render 3D view
-        • 'z': undo interpolate or last mask""")
         self.ui.pushEmbeddings.connect("clicked(bool)", self.onPushEmbeddings)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_vert.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_red.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_green.connect("toggled(bool)", self.onRadioView)
         self.ui.radioButton_yellow.connect("toggled(bool)", self.onRadioView)
-
 
         shortcuts = [
             ("i", lambda: self.activateIncludePoints()),
@@ -625,14 +591,13 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
                 self.layout_id += 1
 
     def updateLayout(self):
-        self.layout_id = self.layouts.get((self.orientation, self.view))
+        self.layout_id = self.layouts[(self.orientation, self.view)]
 
         # If the layout ID doesn't exist, use a default layout
         if self.layout_id is None:
-            defaultLayout = self.layouts.get(('horizontal', 'Red'))
+            defaultLayout = self.layouts[('horizontal', 'Red')]
             if defaultLayout is None:
                 return
-
             self.layout_id = defaultLayout
 
         self.lm.setLayout(self.layout_id)
