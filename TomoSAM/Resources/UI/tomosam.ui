@@ -95,7 +95,11 @@
                </widget>
               </item>
               <item>
-               <widget class="ctkPathLineEdit" name="PathLineEdit_sam"/>
+               <widget class="QPushButton" name="pushSAMweights">
+                <property name="text">
+                 <string>Download</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -118,9 +122,16 @@
                <widget class="ctkPathLineEdit" name="PathLineEdit_emb"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushEmbeddings">
+               <widget class="QPushButton" name="pushEmbeddingsCreate">
                 <property name="text">
                  <string>Create</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushEmbeddingsColab">
+                <property name="text">
+                 <string>Open Colab</string>
                 </property>
                </widget>
               </item>

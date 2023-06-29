@@ -6,6 +6,7 @@ import os
 import vtk
 import qt
 import urllib.request
+import hashlib
 
 
 class tomosam(ScriptedLoadableModule):
@@ -40,7 +41,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.layout_id = 20000
         self.orientation = 'horizontal'
         self.view = "Red"
-        self.download_location = qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation)
+        self.sam_weights_path = os.path.join(qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation), "sam_vit_h_4b8939.pth")
         self.layouts = {}  # Initialize an empty dictionary for layouts
         self.createLayouts() # Call the method to create layouts
 
@@ -71,10 +72,11 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.markupsExclude.markupsPlaceWidget().setPlaceModePersistency(True)
 
         # filepaths
-        self.ui.PathLineEdit_sam.connect('currentPathChanged(QString)', self.pathSAMweights)
         self.ui.PathLineEdit_emb.connect('currentPathChanged(QString)', self.pathEmbeddings)
 
         # push buttons
+        self.ui.pushSAMweights.connect("clicked(bool)", self.onPushSAMweights)
+        self.ui.pushSAMweights.setToolTip(f"Download SAM weights to {self.sam_weights_path}")
         self.ui.pushMaskAccept.connect("clicked(bool)", self.onPushMaskAccept)
         self.ui.pushMaskClear.connect("clicked(bool)", self.onPushMaskClear)
         self.ui.pushSegmentAdd.connect("clicked(bool)", self.onPushSegmentAdd)
@@ -85,7 +87,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.pushInitializeInterp.connect("clicked(bool)", self.onPushInitializeInterp)
         self.ui.pushUndo.connect("clicked(bool)", self.onPushUndo)
         self.ui.pushHelp.connect("clicked(bool)", self.onPushShowHelp)
-        self.ui.pushEmbeddings.connect("clicked(bool)", self.onPushEmbeddings)
+        self.ui.pushEmbeddingsColab.connect("clicked(bool)", self.onPushEmbeddingsColab)
+        self.ui.pushEmbeddingsCreate.connect("clicked(bool)", self.onPushEmbeddingsCreate)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_vert.connect("toggled(bool)", self.onRadioOrient)
         self.ui.radioButton_red.connect("toggled(bool)", self.onRadioView)
@@ -121,7 +124,9 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.setParameterNode(self.logic.getParameterNode())
 
         self._parameterNode.root_path = os.path.dirname(os.path.dirname(os.path.dirname(self.resourcePath(''))))
-        self.pathSAMweights(os.path.join(self.download_location, "sam_vit_h_4b8939.pth"))
+        if self.logic.sam is None:
+            self.logic.create_sam(self.sam_weights_path)
+            self.updateLayout()
 
         if self._parameterNode.GetNodeReferenceID("tomosamInputVolume") is None:
             volume_node = slicer.mrmlScene.GetFirstNodeByClass("vtkMRMLScalarVolumeNode")
@@ -293,7 +298,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def addPoint(self, caller, stored_coords):
         point_index = caller.GetDisplayNode().GetActiveControlPoint()
-        if not self.checkVolume() or not self.checkSAMembeddings():
+        if not self.checkVolume() or not self.checkSAMandEmbeddings():
             self.actual_remove_click = False
             caller.RemoveNthControlPoint(point_index)
             return
@@ -401,37 +406,30 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self._parameterNode.GetNodeReference("tomosamSegmentation").RemoveSegment(self._parameterNode.GetParameter("tomosamCurrentSegment"))
         self.ui.segmentSelector.setCurrentSegmentID(self._parameterNode.GetNodeReference("tomosamSegmentation").GetSegmentation().GetSegmentIDs()[-1])
 
-    def pathSAMweights(self, initialized_path=None):
-        if initialized_path is None:
-            sam_weights_path = self.download_location
+    def onPushSAMweights(self):
+        if self.checkSAMdownload():
+            slicer.util.delayDisplay(f"Downloading SAM weights to {self.sam_weights_path} (2.5GB, it may take several minutes)...")
+            print("Downloading SAM weights ... ", end='')
+            url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
+            urllib.request.urlretrieve(url, self.sam_weights_path)
+            print("Done")
         else:
-            sam_weights_path = initialized_path
-            self.ui.PathLineEdit_sam.currentPath = sam_weights_path
-        if not os.path.exists(sam_weights_path) or not os.path.isfile(sam_weights_path):
-            if initialized_path is None:
-                # Ask the user for permission to download the SAM weights
-                reply = slicer.util.messageBox.question(self, "Download SAM Weights",
-                                             "The SAM weights file is not found. Do you want to download it?",
-                                             slicer.util.messageBox.Yes | slicer.util.messageBox.No)
-                if reply == slicer.util.messageBox.Yes:
-                    # Display a message indicating the download is starting
-                    slicer.util.messageBox.information(self, "Download Started", "Downloading SAM weights (it may take several minutes)...")
+            slicer.util.infoDisplay(f"SAM weights already found at {self.sam_weights_path}")
 
-                    print("Downloading SAM weights (it may take several minutes)...", end='')
-                    url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
-                    sam_weights_path = self.download_location
-                    urllib.request.urlretrieve(url, sam_weights_path)
-                    print("Done")
-                else:
-                    return
-            else:
-                slicer.util.errorDisplay("SAM weights file not found: " + sam_weights_path)
-                return
-        elif os.path.splitext(sam_weights_path)[1] != ".pth":
-            slicer.util.errorDisplay("Unrecognized extension for SAM weights")
-            return
+    def checkSAMdownload(self):
+        return not os.path.exists(self.sam_weights_path) or not os.path.isfile(self.sam_weights_path) or \
+            hashlib.md5(open(self.sam_weights_path, 'rb').read()).hexdigest() != "4b8939a88964f0f4ff5f5b2642c598a6"
+
+    def checkSAMandEmbeddings(self):
         if self.logic.sam is None:
-            self.logic.create_sam(sam_weights_path)
+            if self.checkSAMdownload():
+                slicer.util.errorDisplay("Please download SAM weights")
+                return False
+            self.logic.create_sam(self.sam_weights_path)
+        if len(self.logic.embeddings) == 0:
+            slicer.util.errorDisplay("Please select image Embeddings")
+            return False
+        return True
 
     def pathEmbeddings(self):
         embeddings_path = self.ui.PathLineEdit_emb.currentPath
@@ -451,21 +449,18 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             slicer.util.errorDisplay("Embeddings dimensions don't match image")
             return
 
+    def onPushEmbeddingsCreate(self):
+        slicer.util.infoDisplay("Needs to be implemented")
+
+    def onPushEmbeddingsColab(self):
+        qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb"))
+
     def checkVolume(self):
         if not self._parameterNode.GetNodeReferenceID("tomosamInputVolume"):
             slicer.util.errorDisplay("Please select a volume")
             return False
         else:
             return True
-
-    def checkSAMembeddings(self):
-        if self.logic.sam is None:
-            slicer.util.errorDisplay("Please select SAM weights")
-        elif len(self.logic.embeddings) == 0:
-            slicer.util.errorDisplay("Please select image Embeddings")
-        else:
-            return True
-        return False
 
     def onPushCenter3d(self):
         if not self.slice_frozen:
@@ -508,9 +503,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         for segmentID in self._parameterNode.GetNodeReference("tomosamSegmentation").GetSegmentation().GetSegmentIDs():
             if segmentID != self._parameterNode.GetParameter("tomosamCurrentSegment"):
                 self._parameterNode.GetNodeReference("tomosamSegmentation").GetDisplayNode().SetSegmentVisibility(segmentID, True)
-
-    def onPushEmbeddings(self):
-        qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb"))
 
     @vtk.calldata_type(vtk.VTK_OBJECT)
     def onNodeAdded(self, caller, event, calldata):

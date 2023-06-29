@@ -37,7 +37,8 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         try:
           import PyTorchUtils
         except ModuleNotFoundError as e:
-          raise RuntimeError("This module requires PyTorch extension. Install it from the Extensions Manager.")
+            slicer.util.errorDisplay("This module requires PyTorch extension. Install it from the Extensions Manager.")
+            return False
 
         minimumTorchVersion = "1.12"
         torchLogic = PyTorchUtils.PyTorchUtilsLogic()
@@ -62,13 +63,17 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
             slicer.util.delayDisplay("segment_anything Python package is required. Installing... (it may take several minutes)", 3000)
             slicer.util.pip_install("segment-anything")
             from segment_anything import sam_model_registry, SamPredictor
+        return True
 
-    def create_sam(self, sam_checkpoint_filepath):
-        print("Creating SAM predictor ... ", end="")
-        self.setupPythonRequirements()
+    def create_sam(self, sam_weights_path):
+        slicer.util.delayDisplay("Loading TomoSAM ... ")
+
+        if not self.setupPythonRequirements():
+            return
 
         from segment_anything import sam_model_registry, SamPredictor
-        self.sam = sam_model_registry["vit_h"](checkpoint=sam_checkpoint_filepath)
+        print("Creating SAM predictor ... ", end="")
+        self.sam = sam_model_registry["vit_h"](checkpoint=sam_weights_path)
 
         if self.torch.cuda.is_available():
             self.device = "cuda:0"
