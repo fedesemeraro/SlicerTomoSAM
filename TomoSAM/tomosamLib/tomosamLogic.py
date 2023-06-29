@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import vtk
 import SimpleITK as sitk
+import sys
 
 
 class tomosamLogic(ScriptedLoadableModuleLogic):
@@ -35,7 +36,7 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
 
         # Install PyTorch
         try:
-          import PyTorchUtils
+            import PyTorchUtils
         except ModuleNotFoundError as e:
             slicer.util.errorDisplay("This module requires PyTorch extension. Install it from the Extensions Manager.")
             return False
@@ -85,14 +86,54 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         self.predictor.is_image_set = True
         print("Done")
 
+    def create_embeddings(self, output_filepath):
+        self.img = slicer.util.arrayFromVolume(self._parameterNode.GetNodeReference("tomosamInputVolume"))
+
+        if self.img.ndim > 3 or self.img.ndim < 2:
+            raise Exception("Unsupported image type.")
+        elif self.img.ndim == 2:
+            self.img = self.img[:, :, np.newaxis]
+
+        embeddings = [[], [], []]
+        slice_direction = ['x', 'y', 'z']
+        for i, d in enumerate(slice_direction):
+            print(f"\nSlicing along {d} direction")
+            for k in range(self.img.shape[i]):
+                if i == 0:
+                    img_slice = self.img[k]
+                elif i == 1:
+                    img_slice = self.img[:, k]
+                else:
+                    img_slice = self.img[:, :, k]
+
+                slicer.util.delayDisplay(f"Creating embeddings for {output_filepath} with dims: {self.img.shape} \n"
+                                         f"Slicing along {d} direction, {k + 1}/{self.img.shape[i]} image")
+                sys.stdout.write(f"\rCreating embedding for {k + 1}/{self.img.shape[i]} image")
+
+                self.predictor.set_image(np.repeat(img_slice[:, :, np.newaxis], 3, axis=2))
+                embeddings[i].append({'original_size': self.predictor.original_size,
+                                      'input_size': self.predictor.input_size,
+                                      'features': self.predictor.features.to('cpu')})
+
+                self.predictor.reset_image()
+                if self.torch.cuda.is_available():
+                    self.torch.cuda.empty_cache()
+
+        with open(output_filepath, 'wb') as f:
+            pickle.dump(embeddings, f)
+            print(f"\nSaved {output_filepath}")
+        return output_filepath
+
     def read_img_embeddings(self, embeddings_filepath):
         self.img = slicer.util.arrayFromVolume(self._parameterNode.GetNodeReference("tomosamInputVolume"))
         ras2ijk = vtk.vtkMatrix4x4()
         self._parameterNode.GetNodeReference("tomosamInputVolume").GetRASToIJKMatrix(ras2ijk)
         self.voxel_sizes[:] = slicer.util.arrayFromVTKMatrix(ras2ijk).diagonal()[:3]
 
+        print("Reading embeddings ... ", end="")
         with open(embeddings_filepath, 'rb') as f:
             self.embeddings = pickle.load(f)
+        print("Done")
 
         # checking image vs embeddings dimensions
         if (np.any(np.array(self.img.shape)[[1, 2]] != np.array(self.embeddings[0][0]['original_size'])) or

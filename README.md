@@ -35,17 +35,21 @@ Follow these steps to setup the extension:
 
 ### Prepare the embeddings
 
-This preprocessing step creates the embeddings for all the slices of your tiff stack along the three Cartesian directions.
-You can create the embeddings by running [this notebook](Embeddings/create_embeddings.ipynb) either locally or 
-[on Colab](https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb).
-A GPU is recommended for this step to speed up the process; in Colab, make sure to select 
-`Runtime`&rarr;`Change runtime type` and set the `Hardware accelerator` to GPU. Locally, you will first need to create 
-the environment by running: 
+A necessary preprocessing step to use TomoSAM is the creation of the embeddings for all the slices of your image stack 
+along the three Cartesian directions. A GPU is recommended for this step to speed up the process. 
+This can be done in three different ways, depending on your needs: 
 
-    conda env create --file env/environment_cpu.yml  # for CPU
-    conda env create --file env/environment_gpu.yml  # for GPU
-    conda activate tomosam
-    jupyter notebook create_embeddings.ipynb
+1. Using an online GPU on
+[Colab](https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb)
+
+2. Directly in TomoSAM by clicking the `Create` button in the Embeddings section
+
+3. Locally using the same [notebook](Embeddings/create_embeddings.ipynb) and first installing the environment by running: 
+
+        conda env create --file Embeddings/env/environment_cpu.yml  # for CPU
+        conda env create --file Embeddings/env/environment_gpu.yml  # for GPU
+        conda activate tomosam
+        jupyter notebook create_embeddings.ipynb
 
 
 ### How to use the TomoSAM Slicer extension

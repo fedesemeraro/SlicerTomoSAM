@@ -41,7 +41,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.layout_id = 20000
         self.orientation = 'horizontal'
         self.view = "Red"
-        self.sam_weights_path = os.path.join(qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation), "sam_vit_h_4b8939.pth")
+        self.download_location = qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation)
+        self.sam_weights_path = os.path.join(self.download_location, "sam_vit_h_4b8939.pth")
         self.layouts = {}  # Initialize an empty dictionary for layouts
         self.createLayouts() # Call the method to create layouts
 
@@ -298,7 +299,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def addPoint(self, caller, stored_coords):
         point_index = caller.GetDisplayNode().GetActiveControlPoint()
-        if not self.checkVolume() or not self.checkSAMandEmbeddings():
+        if not self.checkVolume() or not self.checkSAM() or not self.checkEmbeddings():
             self.actual_remove_click = False
             caller.RemoveNthControlPoint(point_index)
             return
@@ -420,16 +421,26 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         return not os.path.exists(self.sam_weights_path) or not os.path.isfile(self.sam_weights_path) or \
             hashlib.md5(open(self.sam_weights_path, 'rb').read()).hexdigest() != "4b8939a88964f0f4ff5f5b2642c598a6"
 
-    def checkSAMandEmbeddings(self):
+    def checkSAM(self):
         if self.logic.sam is None:
             if self.checkSAMdownload():
                 slicer.util.errorDisplay("Please download SAM weights")
                 return False
             self.logic.create_sam(self.sam_weights_path)
+        return True
+
+    def checkEmbeddings(self):
         if len(self.logic.embeddings) == 0:
             slicer.util.errorDisplay("Please select image Embeddings")
             return False
         return True
+
+    def checkVolume(self):
+        if not self._parameterNode.GetNodeReferenceID("tomosamInputVolume"):
+            slicer.util.errorDisplay("Please select a volume")
+            return False
+        else:
+            return True
 
     def pathEmbeddings(self):
         embeddings_path = self.ui.PathLineEdit_emb.currentPath
@@ -442,25 +453,37 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             slicer.util.errorDisplay("Unrecognized extension for image Embeddings")
             return
 
-        print("Reading Embeddings ... ", end='')
+        slicer.util.delayDisplay(f"Reading embeddings: {embeddings_path}")
         check = self.logic.read_img_embeddings(embeddings_path)
-        print("Done")
         if not check:
             slicer.util.errorDisplay("Embeddings dimensions don't match image")
             return
 
     def onPushEmbeddingsCreate(self):
-        slicer.util.infoDisplay("Needs to be implemented")
+        if not self.checkVolume() or not self.checkSAM():
+            return
+
+        volume_node = self._parameterNode.GetNodeReference("tomosamInputVolume")
+        storageNode = volume_node.GetStorageNode()
+        if storageNode is not None:  # loaded via drag-drop
+            filepath = storageNode.GetFullNameFromFileName()
+        else:  # Loaded via DICOM browser
+            instanceUIDs = volume_node.GetAttribute("DICOM.instanceUIDs").split()
+            filepath = slicer.dicomDatabase.fileForInstance(instanceUIDs[0])
+
+        output_filepath = os.path.join(self.download_location, os.path.splitext(filepath)[0] + ".pkl")
+        if os.path.isfile(output_filepath):
+            slicer.util.infoDisplay(f"Embeddings file already found at {output_filepath}")
+            return
+
+        if slicer.util.confirmOkCancelDisplay("It is recommended to create embeddings on a machine with GPU (e.g. Colab) to reduce runtime.\n"
+                                              "Creating them locally may take several minutes and there is not way to stop the process other than force quitting Slicer.\n"
+                                              "Click OK to continue"):
+            self.embeddings_already_loaded = True
+            self.ui.PathLineEdit_emb.currentPath = self.logic.create_embeddings(output_filepath)
 
     def onPushEmbeddingsColab(self):
         qt.QDesktopServices.openUrl(qt.QUrl("https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb"))
-
-    def checkVolume(self):
-        if not self._parameterNode.GetNodeReferenceID("tomosamInputVolume"):
-            slicer.util.errorDisplay("Please select a volume")
-            return False
-        else:
-            return True
 
     def onPushCenter3d(self):
         if not self.slice_frozen:
@@ -482,7 +505,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self._parameterNode.GetNodeReference("tomosamSegmentation").CreateClosedSurfaceRepresentation()
 
     def onPushInitializeInterp(self):
-
         if len(self.logic.interp_slice_direction) > 1:
             slicer.util.errorDisplay("Cannot interpolate if multiple slice directions have been segmented")
             return
