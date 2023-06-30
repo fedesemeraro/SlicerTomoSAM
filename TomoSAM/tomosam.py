@@ -424,20 +424,20 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     def checkSAM(self):
         if self.logic.sam is None:
             if self.checkSAMdownload():
-                slicer.util.errorDisplay("Please download SAM weights")
+                slicer.util.errorDisplay("SAM weights not found, use Download button")
                 return False
             self.logic.create_sam(self.sam_weights_path)
         return True
 
     def checkEmbeddings(self):
         if len(self.logic.embeddings) == 0:
-            slicer.util.errorDisplay("Please select image Embeddings")
+            slicer.util.errorDisplay("Select image Embeddings")
             return False
         return True
 
     def checkVolume(self):
         if not self._parameterNode.GetNodeReferenceID("tomosamInputVolume"):
-            slicer.util.errorDisplay("Please select a volume")
+            slicer.util.errorDisplay("Select a volume")
             return False
         else:
             return True

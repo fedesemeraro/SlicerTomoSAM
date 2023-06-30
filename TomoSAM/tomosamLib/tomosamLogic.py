@@ -41,27 +41,18 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
             slicer.util.errorDisplay("This module requires PyTorch extension. Install it from the Extensions Manager.")
             return False
 
-        minimumTorchVersion = "1.12"
         torchLogic = PyTorchUtils.PyTorchUtilsLogic()
         if not torchLogic.torchInstalled():
             slicer.util.delayDisplay("PyTorch Python package is required. Installing... (it may take several minutes)")
-            torch = torchLogic.installTorch(askConfirmation=True, torchVersionRequirement = f">={minimumTorchVersion}")
+            torch = torchLogic.installTorch(askConfirmation=True)
             if torch is None:
                 raise ValueError('PyTorch extension needs to be installed to use this module.')
-        else:
-            # torch is installed, check version
-            from packaging import version
-            if version.parse(torchLogic.torch.__version__) < version.parse(minimumTorchVersion):
-                raise ValueError(f'PyTorch version {torchLogic.torch.__version__} is not compatible with this module.'
-                                 + f' Minimum required version is {minimumTorchVersion}. You can use "PyTorch Util" module to install PyTorch'
-                                 + f' with version requirement set to: >={minimumTorchVersion}')
         self.torch = torchLogic.importTorch()
 
         # Install SAM
         try:
             from segment_anything import sam_model_registry, SamPredictor
         except ModuleNotFoundError:
-            slicer.util.delayDisplay("segment_anything Python package is required. Installing... (it may take several minutes)", 3000)
             slicer.util.pip_install("segment-anything")
             from segment_anything import sam_model_registry, SamPredictor
         return True
@@ -74,7 +65,12 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
 
         from segment_anything import sam_model_registry, SamPredictor
         print("Creating SAM predictor ... ", end="")
-        self.sam = sam_model_registry["vit_h"](checkpoint=sam_weights_path)
+        try:
+            self.sam = sam_model_registry["vit_h"](checkpoint=sam_weights_path)
+        except FileNotFoundError:
+            slicer.util.infoDisplay("SAM weights not found, use Download button")
+            print("weights not found")
+            return
 
         if self.torch.cuda.is_available():
             self.device = "cuda:0"
