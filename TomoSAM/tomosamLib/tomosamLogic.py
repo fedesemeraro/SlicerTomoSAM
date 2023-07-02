@@ -53,7 +53,7 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         try:
             from segment_anything import sam_model_registry, SamPredictor
         except ModuleNotFoundError:
-            slicer.util.pip_install("git+https://github.com/facebookresearch/segment-anything.git")
+            slicer.util.pip_install("https://github.com/facebookresearch/segment-anything/archive/6fdee8f2727f4506cfbbe553e23b895e27956588.zip")
             from segment_anything import sam_model_registry, SamPredictor
         return True
 
