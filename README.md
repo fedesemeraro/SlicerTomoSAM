@@ -24,14 +24,10 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 
 ### Installation:
 
-Follow these steps to setup the extension:
-
-- Download [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM/archive/refs/heads/main.zip) and unzip it
 - Download [Slicer](https://download.slicer.org/) and install it
-- In Slicer, open the `Extension Manager` and install the [PyTorch Extension](https://github.com/fepegar/SlicerPyTorch)
-- Within Slicer, open `Applications Settings`&rarr;`Modules`
-- Drag and drop the SlicerTomoSAM/TomoSAM folder inside `Additional module paths` and click ok to restart
-- The extension will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
+- In Slicer, open the `Extension Manager` and install 
+[PyTorch](https://github.com/fepegar/SlicerPyTorch) and [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM)
+- TomoSAM will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
 
 
 ### Prepare the embeddings
