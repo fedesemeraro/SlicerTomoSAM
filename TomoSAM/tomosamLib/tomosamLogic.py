@@ -41,12 +41,22 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
             slicer.util.errorDisplay("This module requires PyTorch extension. Install it from the Extensions Manager.")
             return False
 
+        minimumTorchVersion = "1.7"
+        minimumTorchVisionVersion = "0.8"
         torchLogic = PyTorchUtils.PyTorchUtilsLogic()
         if not torchLogic.torchInstalled():
             slicer.util.delayDisplay("PyTorch Python package is required. Installing... (it may take several minutes)")
-            torch = torchLogic.installTorch(askConfirmation=True)
+            torch = torchLogic.installTorch(askConfirmation=True, torchVersionRequirement=f">={minimumTorchVersion}",
+                                            torchvisionVersionRequirement=f">={minimumTorchVisionVersion}")
             if torch is None:
                 raise ValueError('PyTorch extension needs to be installed to use this module.')
+        else:
+            # torch is installed, check version
+            from packaging import version
+            if version.parse(torchLogic.torch.__version__) < version.parse(minimumTorchVersion):
+                raise ValueError(f'PyTorch version {torchLogic.torch.__version__} is not compatible with this module.'
+                                 + f' Minimum required version is {minimumTorchVersion}. You can use "PyTorch Util" module to install PyTorch'
+                                 + f' with version requirement set to: >={minimumTorchVersion}')
         self.torch = torchLogic.importTorch()
 
         # Install SAM
@@ -135,10 +145,9 @@ class tomosamLogic(ScriptedLoadableModuleLogic):
         if (np.any(np.array(self.img.shape)[[1, 2]] != np.array(self.embeddings[0][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 2]] != np.array(self.embeddings[1][0]['original_size'])) or
                 np.any(np.array(self.img.shape)[[0, 1]] != np.array(self.embeddings[2][0]['original_size']))):
+            slicer.util.errorDisplay(f"Embeddings dimensions {(len(self.embeddings[0]), len(self.embeddings[1]), len(self.embeddings[2]))} "
+                                     f"don't match image {self.img.shape}")
             self.embeddings = []
-            return False
-        else:
-            return True
 
     def pass_mask_to_slicer(self):
         slicer.util.updateSegmentBinaryLabelmapFromArray(self.mask,

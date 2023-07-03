@@ -454,10 +454,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             return
 
         slicer.util.delayDisplay(f"Reading embeddings: {embeddings_path}")
-        check = self.logic.read_img_embeddings(embeddings_path)
-        if not check:
-            slicer.util.errorDisplay("Embeddings dimensions don't match image")
-            return
+        self.logic.read_img_embeddings(embeddings_path)
 
     def onPushEmbeddingsCreate(self):
         if not self.checkVolume() or not self.checkSAM():
