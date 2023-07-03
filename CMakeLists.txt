@@ -10,7 +10,7 @@ set(EXTENSION_CONTRIBUTORS "Federico Semeraro (NASA); Alexandre Quintart (NASA);
 set(EXTENSION_DESCRIPTION "TomoSAM helps with the segmentation of 3D data from tomography or other imaging techniques using the Segment Anything Model (SAM).")
 set(EXTENSION_ICONURL "https://raw.githubusercontent.com/fsemerar/SlicerTomoSAM/main/TomoSAM/Resources/Media/tomosam_logo.png")
 set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/fsemerar/SlicerTomoSAM/main/TomoSAM/Resources/Media/tomosam_screenshot_1.png")
-set(EXTENSION_DEPENDS "SlicerPyTorch") # Specified as a list or "NA" if no dependencies
+set(EXTENSION_DEPENDS "PyTorch") # Specified as a list or "NA" if no dependencies
 
 #-----------------------------------------------------------------------------
 # Extension dependencies
