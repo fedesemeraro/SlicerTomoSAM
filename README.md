@@ -24,7 +24,7 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 
 ### Installation:
 
-- Install the Preview Release of [Slicer](https://download.slicer.org/)
+- Download [Slicer](https://download.slicer.org/) and install it
 - In Slicer, open the `Extension Manager`, install [PyTorch](https://github.com/fepegar/SlicerPyTorch) and 
 [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM), and restart it
 - TomoSAM will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
