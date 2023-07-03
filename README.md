@@ -10,11 +10,6 @@ to aid the segmentation of 3D data from tomography or other imaging techniques.
   <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_screenshot_1.png" width="100%"></img>
 </p>
 
-<p align="center">
-  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_workflow.png" width="100%"></img>
-</p>
-
-
 ## How to Get Started
 
 You can follow [this tutorial video](https://youtu.be/4nXCYrvBSjk) 
@@ -36,8 +31,8 @@ A necessary preprocessing step to use TomoSAM is the creation of the embeddings 
 along the three Cartesian directions. A GPU is recommended for this step to speed up the process. 
 This can be done in three different ways, depending on your needs: 
 
-1. Using an online GPU on
-[Colab](https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb)
+1. Using an online GPU
+[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb)
 
 2. Directly in TomoSAM by clicking the `Create` button in the Embeddings section
 
@@ -66,10 +61,6 @@ Note that you can further modify the masks created in TomoSAM using the widgets 
 In addition, notice that several **keyboard shortcuts** have been added to streamline the segmentation process 
 (refer to the `Info help` button within TomoSAM for the list of shortcuts).
 
-<p align="center">
-  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_diagram.png" width="100%"></img>
-</p>
-
 
 ## Citation
 
@@ -83,6 +74,16 @@ If you find this work useful for your research or applications, please cite [our
   year={2023}
 }
 ```
+
+From the paper, the software architecture is summarized in the following diagram and our workflow to analyze 
+Thermal Protection Materials (TPS) is also shown below. 
+
+<p align="center">
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_diagram.png" width="100%"></img>
+</p>
+<p align="center">
+  <img src="https://github.com/fsemerar/SlicerTomoSAM/raw/main/TomoSAM/Resources/Media/tomosam_workflow.png" width="100%"></img>
+</p>
 
 
 ## License
