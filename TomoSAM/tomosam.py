@@ -17,9 +17,34 @@ class tomosam(ScriptedLoadableModule):
         self.parent.dependencies = []
         self.parent.contributors = ["Federico Semeraro (NASA); Alexandre Quintart (NASA)",
                                     "Sergio Fraile Izquierdo (NASA); Joseph Ferguson (Stanford University)"]
-        self.parent.helpText = "TomoSAM helps with the segmentation of 3D data from tomography or other imaging " \
-                               "techniques using the Segment Anything Model (SAM)."
-        self.parent.acknowledgementText = ""
+        self.parent.helpText = \
+            """TomoSAM helps with the segmentation of 3D data from tomography or other imaging techniques using the Segment Anything Model (SAM).<br>
+<br>
+General Tips (check out our <a href="https://github.com/fsemerar/SlicerTomoSAM">repository</a>):
+<ul><li>Generate .pkl using <a href="https://colab.research.google.com/github/fsemerar/SlicerTomoSAM/blob/main/Embeddings/create_embeddings.ipynb">Colab</a> or the Embeddings Create button</li>
+<li>Place .tif and .pkl in same folder and make their name equivalent</li>
+<li>Drag and drop .tif --> imports both image and embeddings</li>
+<li>Once include-point added, the slice is frozen (white background)</li>
+<li>Accept Mask button clears points and confirms slice segmentation</li>
+<li>Add Segment button adds a new label to segmentation</li>
+<li>Create Interpolation button creates masks in between created ones</li>
+<li>Undo button reverts interpolation or last mask</li>
+<li>Clear button clears the points and the active mask</li>
+</ul>
+<br>
+Note: SAM was trained with up to 9 points, so it is recommended to add up to 9 include+exclude points for optimal predictions<br>
+<br>
+Keyboard Shortcuts:
+<ul><li>'i': switch to include-points</li>
+<li>'e': switch to exclude-points</li>
+<li>'a': accept mask</li>
+<li>'n': new segment</li>
+<li>'c': center view</li>
+<li>'h': hide/show slice</li>
+<li>'r': render 3D view</li>
+<li>'z': undo interpolate or last mask</li>
+</ul>"""
+        self.parent.acknowledgementText = """If you find this work useful for your research or applications please cite <a href="https://arxiv.org/abs/2306.08609">our paper</a>"""
 
 
 class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
@@ -44,7 +69,7 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.download_location = qt.QStandardPaths.writableLocation(qt.QStandardPaths.DownloadLocation)
         self.sam_weights_path = os.path.join(self.download_location, "sam_vit_h_4b8939.pth")
         self.layouts = {}  # Initialize an empty dictionary for layouts
-        self.createLayouts() # Call the method to create layouts
+        self.createLayouts()  # Call the method to create layouts
 
     def setup(self):
         ScriptedLoadableModuleWidget.setup(self)
@@ -87,7 +112,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.pushRender3d.connect("clicked(bool)", self.onPushRender3d)
         self.ui.pushInitializeInterp.connect("clicked(bool)", self.onPushInitializeInterp)
         self.ui.pushUndo.connect("clicked(bool)", self.onPushUndo)
-        self.ui.pushHelp.connect("clicked(bool)", self.onPushShowHelp)
         self.ui.pushEmbeddingsColab.connect("clicked(bool)", self.onPushEmbeddingsColab)
         self.ui.pushEmbeddingsCreate.connect("clicked(bool)", self.onPushEmbeddingsCreate)
         self.ui.radioButton_hor.connect("toggled(bool)", self.onRadioOrient)
@@ -557,9 +581,6 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         selectionNode = slicer.app.applicationLogic().GetSelectionNode()
         selectionNode.SetActivePlaceNodeID(self._parameterNode.GetNodeReferenceID("tomosamExcludePoints"))
         interactionNode.SetCurrentInteractionMode(interactionNode.Place)
-
-    def onPushShowHelp(self):
-        qt.QToolTip.showText(self.ui.pushHelp.mapToGlobal(qt.QPoint()), self.ui.pushHelp.toolTip, self.ui.pushHelp)
 
     def onRadioOrient(self):
         if self.ui.radioButton_hor.isChecked():

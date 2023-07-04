@@ -20,8 +20,7 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 ### Installation:
 
 - Download [Slicer](https://download.slicer.org/) and install it
-- In Slicer, open the `Extension Manager`, install [PyTorch](https://github.com/fepegar/SlicerPyTorch) and 
-[TomoSAM](https://github.com/fsemerar/SlicerTomoSAM), and restart it
+- In Slicer, open the `Extension Manager`, install [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM), and restart it
 - TomoSAM will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
 
 
@@ -46,7 +45,8 @@ This can be done in three different ways, depending on your needs:
 
 ### How to use the TomoSAM Slicer extension
 
-These are the usual steps to produce a segmentation using TomoSAM: 
+Refer to the `Help & Acknoledgement` text for a list of **keyboard shortcuts** and general tips.
+These are the usual steps to produce a segmentation using TomoSAM:
 
 - Place the image and embeddings in the same folder and make their name equivalent, e.g. test.tif and test.pkl
 - Open Slicer and, from the drop-down `Modules` menu, select `Segmentation`&rarr;`TomoSAM`
@@ -58,8 +58,6 @@ These are the usual steps to produce a segmentation using TomoSAM:
 - The 3D view does not refresh automatically to reduce latency: update it using the `Render 3D` button
 
 Note that you can further modify the masks created in TomoSAM using the widgets in the `Segment Editor`, e.g. Paint or Erase.
-In addition, notice that several **keyboard shortcuts** have been added to streamline the segmentation process 
-(refer to the `Info help` button within TomoSAM for the list of shortcuts).
 
 
 ## Citation
