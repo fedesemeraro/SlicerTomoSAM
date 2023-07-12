@@ -468,9 +468,8 @@ class tomosamWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def pathEmbeddings(self):
         embeddings_path = self.ui.PathLineEdit_emb.currentPath
-        if not self.checkVolume():
-            return
-        elif not os.path.exists(embeddings_path) or not os.path.isfile(embeddings_path):
+
+        if not os.path.exists(embeddings_path) or not os.path.isfile(embeddings_path):
             slicer.util.errorDisplay("Image Embeddings file not found")
             return
         elif os.path.splitext(embeddings_path)[1] != ".pkl":
