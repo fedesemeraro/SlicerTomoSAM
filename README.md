@@ -19,7 +19,7 @@ for a quick guide on how to get started. Some example 3D medical images and thei
 
 ### Installation:
 
-- Download [Slicer](https://download.slicer.org/) and install it
+- Download [Slicer](https://download.slicer.org/) >= 5.2.2 and install it.
 - In Slicer, open the `Extension Manager`, install [TomoSAM](https://github.com/fsemerar/SlicerTomoSAM), and restart it
 - TomoSAM will appear in the Modules dropdown list, under `Segmentation`&rarr;`TomoSAM`
 
