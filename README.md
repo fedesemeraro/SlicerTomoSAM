@@ -65,12 +65,17 @@ Note that you can further modify the masks created in TomoSAM using the widgets 
 If you find this work useful for your research or applications, please cite [our paper](https://arxiv.org/abs/2306.08609) using:
 
 ```BibTeX
-@article{semeraro2023tomosam,
-  title={TomoSAM: a 3D Slicer extension using SAM for tomography segmentation},
-  author={Semeraro, Federico and Quintart, Alexandre and Izquierdo, Sergio Fraile and Ferguson, Joseph C},
-  journal={arXiv preprint arXiv:2306.08609},
-  year={2023}
-}
+@article{SEMERARO2025102218,
+title = {TomoSAM: A 3D Slicer extension using SAM for tomography segmentation},
+journal = {SoftwareX},
+volume = {31},
+pages = {102218},
+year = {2025},
+issn = {2352-7110},
+doi = {https://doi.org/10.1016/j.softx.2025.102218},
+url = {https://www.sciencedirect.com/science/article/pii/S2352711025001852},
+author = {Federico Semeraro and Alexandre M. Quintart and Sergio Fraile Izquierdo and Joseph C. Ferguson},
+keywords = {3D segmentation, SAM, Slicer, Tomography},
 ```
 
 From the paper, the software architecture is summarized in the following diagram and our workflow to analyze 
